@@ -96,20 +96,11 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 
 		if (artist != null) {
 			
+			image.setTag(artist.getImg());
 			dm.DisplayImage(artist.getImg(),(Activity)convertView.getContext(), image);
 
 			name.setText(artist.getName());
-			// String teaserText = artist.getMiniTeaser();
-			// if (teaserText == null) {
-			// teaserText = artist.getTeaser();
-			// }
-			// if (teaserText != null && teaserText.length() > 0) {
-			// Disable for now.
-			// teaser.setText(story.getTeaser());
-			// teaser.setVisibility(View.VISIBLE);
-			// } else {
-			// teaser.setVisibility(View.INVISIBLE);
-			// }
+
 		} else {
 			// null marker means it's the end of the list.
 			image.setVisibility(View.INVISIBLE);
