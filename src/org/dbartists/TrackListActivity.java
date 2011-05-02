@@ -102,9 +102,8 @@ public class TrackListActivity extends PlayerActivity implements
 	}
 
 	private void playTrack(Track track, boolean playNow) {
-		String url = track.getUrl();
-		Log.d(TAG, "play now: " + url);
-		PlaylistEntry entry = new PlaylistEntry(-1, url, track.getName(), true,
+		Log.d(TAG, "play now: " + track.getUrl());
+		PlaylistEntry entry = new PlaylistEntry(-1, track.getUrl(), track.getName(), true,
 				-1, track.getUrl());
 		if (playNow) {
 			this.listen(entry);
@@ -116,7 +115,7 @@ public class TrackListActivity extends PlayerActivity implements
 			Track t = trackCache.get(i++);
 			if (t == null)
 				break;
-			PlaylistEntry e = new PlaylistEntry(-1, url, t.getName(), true,
+			PlaylistEntry e = new PlaylistEntry(-1, t.getUrl(), t.getName(), true,
 					-1, t.getUrl());
 			entries.add(e);
 		}
