@@ -36,20 +36,17 @@ public class TopArtistsListActivity extends PlayerActivity implements
 		OnItemClickListener {
 
 	private final static String TAG = "TopArtistsListActivity";
-	private String apiUrl = Constants.GENRE_ARTIST_API_URL;
-	private int genreId = 1;
-	private int page = 1;
+	private String apiUrl = Constants.TOP_ARTIST_API_URL;
 	private String description;
 
-	protected ArtistsListAdapter listAdapter;
+	protected TopArtistsListAdapter listAdapter;
 
 	private static Map<String, Artist> artistsCache = new HashMap<String, Artist>();
 
 	public static Artist getArtistFromCache(String artistId) {
 		Artist result = artistsCache.get(artistId);
 		if (result == null) {
-			// result = ArtistFactory.downloadArtist(artistId);
-			// artistsCache.put(artistId, result);
+
 		}
 		return result;
 	}
@@ -69,24 +66,28 @@ public class TopArtistsListActivity extends PlayerActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
-		genreId = getIntent().getIntExtra(Constants.EXTRA_GENRE_ID, 1);
-		page = getIntent().getIntExtra(Constants.EXTRA_PAGE, 1);
+		int type = getIntent().getIntExtra(Constants.EXTRA_SUBACTIVITY_ID, 1);
+		description = getString(type);
 
-		Resources res = getResources();
-		String[] genre_entries = res.getStringArray(R.array.genre_entry);
-		description = genre_entries[genreId - 1];
-		
+		switch (type) {
+		case R.string.msg_main_subactivity_pop:
+			apiUrl = Constants.POP_ARTIST_API_URL;
+			break;
+		case R.string.msg_main_subactivity_top:
+			apiUrl = Constants.TOP_ARTIST_API_URL;
+			break;
+		}
+
 		super.onCreate(savedInstanceState);
 		ViewGroup container = (ViewGroup) findViewById(R.id.Content);
 		ViewGroup.inflate(this, R.layout.items, container);
 
 		ListView listView = (ListView) findViewById(R.id.ListView01);
 		listView.setOnItemClickListener(this);
-		listAdapter = new ArtistsListAdapter(TopArtistsListActivity.this);
+		listAdapter = new TopArtistsListAdapter(TopArtistsListActivity.this);
 		listView.setAdapter(listAdapter);
 
 		addArtists();
-		
 
 	}
 
@@ -94,24 +95,17 @@ public class TopArtistsListActivity extends PlayerActivity implements
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		Artist s = (Artist) parent.getAdapter().getItem(position);
-		if (s == null) {
-			addArtists();
-		} else {
-			 Intent i = new Intent(this, TrackListActivity.class);
-			 i.putExtra(Constants.EXTRA_ARTIST_NAME, s.getName());
-			 i.putExtra(Constants.EXTRA_ARTIST_IMG, s.getImg());
-			 i.putExtra(Constants.EXTRA_ARTIST_URL, s.getUrl());
-			 startActivityWithoutAnimation(i);
-		}
+		Intent i = new Intent(this, TrackListActivity.class);
+		i.putExtra(Constants.EXTRA_ARTIST_NAME, s.getName());
+		i.putExtra(Constants.EXTRA_ARTIST_IMG, s.getImg());
+		i.putExtra(Constants.EXTRA_ARTIST_URL, s.getUrl());
+		startActivityWithoutAnimation(i);
 	}
 
 	private void addArtists() {
 
-		apiUrl = apiUrl + "?g=" + genreId + "&p=" + page;
+		listAdapter.addMoreArtists(apiUrl, 0);
 
-		listAdapter.addMoreArtists(apiUrl, 20 * (page - 1));
-
-		page++;
 	}
 
 	@Override
@@ -137,7 +131,6 @@ public class TopArtistsListActivity extends PlayerActivity implements
 	@Override
 	public void refresh() {
 		listAdapter.clear();
-		page = 1;
 		addArtists();
 	}
 }

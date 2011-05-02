@@ -57,7 +57,6 @@ public class TopArtistsListAdapter extends ArrayAdapter<Artist> {
 	}
 
 	private List<Artist> moreArtists;
-	private boolean endReached = false;
 
 	private Handler handler = new Handler() {
 		@Override
@@ -65,14 +64,10 @@ public class TopArtistsListAdapter extends ArrayAdapter<Artist> {
 			switch (msg.what) {
 			case MSG_ARTISTS_LOADED:
 				if (moreArtists != null) {
-					remove(null);
 					for (Artist t : moreArtists) {
 						if (getPosition(t) < 0) {
 							add(t);
 						}
-					}
-					if (!endReached) {
-						add(null);
 					}
 				}
 				break;
@@ -101,10 +96,6 @@ public class TopArtistsListAdapter extends ArrayAdapter<Artist> {
 
 			name.setText(artist.getName());
 
-		} else {
-			// null marker means it's the end of the list.
-			image.setVisibility(View.INVISIBLE);
-			name.setText(R.string.msg_load_more);
 		}
 		return convertView;
 	}
@@ -123,8 +114,6 @@ public class TopArtistsListAdapter extends ArrayAdapter<Artist> {
 		moreArtists = ArtistFactory.downloadArtists(url, startId);
 		if (moreArtists != null) {
 			ArtistsListActivity.addAllToArtistCache(moreArtists);
-		} else {
-			endReached = true;
 		}
 	}
 }

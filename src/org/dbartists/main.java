@@ -71,19 +71,12 @@ public class Main extends PlayerActivity implements OnItemClickListener {
 	private String hourlyURL;
 
 	private static final int MSG_ERROR_MESSAGE = 0;
-	private static final int MSG_PLAY_HOURLY = 1;
-	private static final int MSG_CANCEL_LOCATION_LISTENERS = 2;
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_ERROR_MESSAGE:
 				errorMessage();
-				break;
-			case MSG_PLAY_HOURLY:
-				playHourly();
-				break;
-			case MSG_CANCEL_LOCATION_LISTENERS:
 				break;
 			}
 		}
@@ -109,27 +102,17 @@ public class Main extends PlayerActivity implements OnItemClickListener {
 		params.put("sort", "assigned");
 
 		final SubActivity[] activities = {
-				// new SubActivity(new Intent(this,
-				// TrackListActivity.class).putExtra(
-				// Constants.EXTRA_SUBACTIVITY_ID,
-				// R.string.msg_main_subactivity_news)
-				// .putExtra(Constants.EXTRA_QUERY_URL, newsUrl)
-				// .putExtra(Constants.EXTRA_DESCRIPTION, description)
-				// .putExtra(Constants.EXTRA_GROUPING, grouping)
-				// .putExtra(Constants.EXTRA_SIZE, 5)),
 				new SubActivity(new Intent(this, GenreActivity.class).putExtra(
 						Constants.EXTRA_SUBACTIVITY_ID,
 						R.string.msg_main_subactivity_genre)),
-				new SubActivity(new Intent(this, GenreActivity.class).putExtra(
-						Constants.EXTRA_SUBACTIVITY_ID,
-						R.string.msg_main_subactivity_programs)),
-		// new SubActivity(new Intent(this, StationListActivity.class).putExtra(
-		// Constants.EXTRA_SUBACTIVITY_ID,
-		// R.string.msg_main_subactivity_stations)),
-		// new SubActivity(new Intent(this, SearchActivity.class).putExtra(
-		// Constants.EXTRA_SUBACTIVITY_ID,
-		// R.string.msg_main_subactivity_search))
-		};
+				new SubActivity(
+						new Intent(this, TopArtistsListActivity.class)
+								.putExtra(Constants.EXTRA_SUBACTIVITY_ID,
+										R.string.msg_main_subactivity_top)),
+				new SubActivity(
+						new Intent(this, TopArtistsListActivity.class)
+								.putExtra(Constants.EXTRA_SUBACTIVITY_ID,
+										R.string.msg_main_subactivity_pop)) };
 		listView.setAdapter(new MainListAdapter(activities));
 		listView.setOnItemClickListener(this);
 		trackNow();

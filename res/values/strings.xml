@@ -19,7 +19,8 @@
 	<string name="msg_refresh">刷新</string>
 
 	<string name="msg_main_logo">主页</string>
-	<string name="msg_main_subactivity_news">Top Stories</string>
+	<string name="msg_main_subactivity_top">最受欢迎音乐人</string>
+	<string name="msg_main_subactivity_pop">本周流行音乐人</string>
 	<string name="msg_main_subactivity_genre">按流派检索</string>
 	<string name="msg_main_subactivity_programs">Programs</string>
 	<string name="msg_main_subactivity_stations">Stations</string>
