@@ -4,23 +4,23 @@ import java.util.ArrayList;
 
 public class Artist {
 	
+	// artist id
+	private int id;
+	
 	// artist name
 	private String name;
 	
 	// artist site url
 	private String url;
 	
-	// track list
-	private ArrayList<Track> tracks;
+	// artist image
+	private String img;
 	
-	public Artist(String name, String url) {
+	public Artist(int id, String name, String img, String url) {
+		this.id = id;
 		this.name = name;
+		this.img = img;
 		this.url = url;
-	}
-	
-	// TODO: Implement this
-	public void loadTracks() {
-		
 	}
 
 	public String getName() {
@@ -39,5 +39,20 @@ public class Artist {
 		this.url = url;
 	}
 
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 	
 }

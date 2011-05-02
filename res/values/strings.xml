@@ -1,85 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">NPR News</string>
-    <string name="checkbox"></string>
-    <string name="ringtone"></string>
-    
-    <string name="msg_load_more">Load more stories...</string>
+	<string name="app_name">豆瓣音乐人</string>
+	<string name="checkbox"></string>
+	<string name="ringtone"></string>
 
-    <string name="msg_station_list_intro">Locate stations</string>
-    <string name="msg_station_search">Locate stations</string>
-    <string name="msg_station_search_by_local">Local stations</string>
-    <string name="msg_station_search_by_other">Call sign or zip code</string>
-    <string name="msg_station_search_now">Search!</string>
-    <string name="msg_station_podcasts">Podcasts</string>
-    <string name="msg_station_streams">Streams</string>
-    
-    <string name="msg_refresh">Refresh</string>
+	<string name="msg_genre">流派</string>
 
-    <string name="msg_main_logo">Home</string>
-    <string name="msg_main_subactivity_news">Top Stories</string>
-    <string name="msg_main_subactivity_topics">Topics</string>
-    <string name="msg_main_subactivity_programs">Programs</string>
-    <string name="msg_main_subactivity_stations">Stations</string>
-    <string name="msg_main_subactivity_search">Search</string>
-    <string name="msg_main_subactivity_nowplaying">Now Playing</string>
-    <string name="msg_main_subactivity_hourly">Hourly News Summary</string>
-    
-    <string name="msg_main_menu_about">About</string>
-    <string name="msg_main_check_connection">Check connection and try again</string>
-    
-    <string name="msg_share_story">Share this story</string>
-    
-    <string name="msg_listen_nothing">Not playing</string>
-    <string name="msg_listen_playlist">Playlist</string>
-    <string name="msg_listen_now">Listen Now</string>
-    <string name="msg_listen_later">Add to Playlist</string>
-    
-    <string name="msg_playlist_clear">Clear</string>
-    <string name="msg_playlist_unread">Active</string>
-    <string name="msg_playlist_read">Listened to</string>
-    <string name="msg_playlist_title">Playlist</string>
-    
-    <string name="msg_podcast_dialog_title">Listen to podcast?</string>
-    <string name="msg_podcast_listen_now">Now</string>
-    <string name="msg_podcast_enqueue">Later</string>
-    <string name="msg_podcast_cancel">Cancel</string>
-    
-    <string name="msg_search_title">Search results</string>
-    <string name="msg_search_description">Search by date and keywords</string>
-    <string name="msg_search_button">Search!</string>
-    <string name="msg_search_start_date">Start date</string>
-    <string name="msg_search_end_date">End date</string>
-    <string name="msg_search_term">Search terms</string>
-    <string name="msg_search_hint">e.g. Barack Obama</string>
-    
-    <string name="msg_eula_accept">Accept</string>
-    <string name="msg_eula_refuse">Refuse</string>
-    <string name="msg_eula_title">End User License Agreement</string>
-    
-    <string name="msg_about_developer">Developed by</string>
-    <string name="msg_about_developer_value">
-        &lt;br>Michael Frederick
-        &lt;br>Thomas Wilburn
-        &lt;br>Marsh Gosnell</string>
-    
-    <string name="msg_about_contact">Contact</string>
-    <string name="msg_about_contact_value">npr-android@googlegroups.com</string>
-    <string name="msg_about_version_name">Version name</string>
-    <string name="msg_about_version_code">Version code</string>
-    <string name="msg_about_description">NPR is an award-winning, multimedia news organization and an influential force in American life. In collaboration with more than 880 independent public radio stations nationwide, NPR strives to create a more informed public: one challenged and invigorated by a deeper understanding and appreciation of events, ideas and cultures. NPR produces and/or distributes radio programs that are heard by 27.5 million people each week. With more than 90 podcasts, NPR is the most successful podcaster among American media companies. Its 24/7 NPR Worldwide program stream reaches listeners in more than 100 countries. NPR Music, in partnership with leading music stations, is a free music discovery web site that offers live performances, studio sessions, first listens to new albums, blogs and features spanning all music genres. Since its launch in 1970, NPR has become a leader in representation and technology development in the public media community, assuring that the unique mission of nonprofit public media is preserved and grows.</string>
-    <string name="msg_about_feedback">Send Feedback</string>
-    <string name="msg_about_privacy">Privacy</string>
-    <string name="msg_about_terms">Terms</string>
+	<string name="msg_load_more">加载更多音乐人...</string>
 
-    <string name="msg_error">Error</string>
-    <string name="msg_ok">Ok</string>
-    <string name="msg_parse_error">There was an error retrieving the requested resource.</string>
+	<string name="msg_station_list_intro">Locate stations</string>
+	<string name="msg_station_search">Locate stations</string>
+	<string name="msg_station_search_by_local">Local stations</string>
+	<string name="msg_station_search_by_other">Call sign or zip code</string>
+	<string name="msg_station_search_now">Search!</string>
+	<string name="msg_station_podcasts">Podcasts</string>
+	<string name="msg_station_streams">Streams</string>
 
-    <string name="msg_api_key_error">
-To run the NPR app register for an account at <a href="http://npr.org/api">npr.org/api</a>.
-Then login, go to \"Manage\" and click \"Generate Key.\"
-Paste the key into res/raw/api_key.txt
-</string>
-    <string name="msg_item_added_to_playlist">Item added to playlist</string>
+	<string name="msg_refresh">刷新</string>
+
+	<string name="msg_main_logo">主页</string>
+	<string name="msg_main_subactivity_news">Top Stories</string>
+	<string name="msg_main_subactivity_genre">按流派检索</string>
+	<string name="msg_main_subactivity_programs">Programs</string>
+	<string name="msg_main_subactivity_stations">Stations</string>
+	<string name="msg_main_subactivity_search">Search</string>
+	<string name="msg_main_subactivity_nowplaying">Now Playing</string>
+	<string name="msg_main_subactivity_hourly">Hourly News Summary</string>
+
+	<string name="msg_main_menu_about">About</string>
+	<string name="msg_main_check_connection">Check connection and try again</string>
+
+	<string name="msg_share_story">Share this story</string>
+
+	<string name="msg_listen_nothing">Not playing</string>
+	<string name="msg_listen_playlist">Playlist</string>
+	<string name="msg_listen_now">Listen Now</string>
+	<string name="msg_listen_later">Add to Playlist</string>
+
+	<string name="msg_playlist_clear">Clear</string>
+	<string name="msg_playlist_unread">Active</string>
+	<string name="msg_playlist_read">Listened to</string>
+	<string name="msg_playlist_title">Playlist</string>
+
+	<string name="msg_podcast_dialog_title">Listen to podcast?</string>
+	<string name="msg_podcast_listen_now">Now</string>
+	<string name="msg_podcast_enqueue">Later</string>
+	<string name="msg_podcast_cancel">Cancel</string>
+
+	<string name="msg_search_title">Search results</string>
+	<string name="msg_search_description">Search by date and keywords</string>
+	<string name="msg_search_button">Search!</string>
+	<string name="msg_search_start_date">Start date</string>
+	<string name="msg_search_end_date">End date</string>
+	<string name="msg_search_term">Search terms</string>
+	<string name="msg_search_hint">e.g. Barack Obama</string>
+
+	<string name="msg_eula_accept">Accept</string>
+	<string name="msg_eula_refuse">Refuse</string>
+	<string name="msg_eula_title">End User License Agreement</string>
+
+	<string name="msg_about_developer">Developed by</string>
+	<string name="msg_about_developer_value">
+		&lt;br>Michael Frederick
+		&lt;br>Thomas Wilburn
+		&lt;br>Marsh Gosnell</string>
+
+	<string name="msg_about_contact">Contact</string>
+	<string name="msg_about_contact_value">npr-android@googlegroups.com</string>
+	<string name="msg_about_version_name">Version name</string>
+	<string name="msg_about_version_code">Version code</string>
+	<string name="msg_about_description">NPR is an award-winning, multimedia news
+		organization and an influential force in American life. In
+		collaboration with more than 880 independent public radio stations
+		nationwide, NPR strives to create a more informed public: one
+		challenged and invigorated by a deeper understanding and appreciation
+		of events, ideas and cultures. NPR produces and/or distributes radio
+		programs that are heard by 27.5 million people each week. With more
+		than 90 podcasts, NPR is the most successful podcaster among American
+		media companies. Its 24/7 NPR Worldwide program stream reaches
+		listeners in more than 100 countries. NPR Music, in partnership with
+		leading music stations, is a free music discovery web site that offers
+		live performances, studio sessions, first listens to new albums, blogs
+		and features spanning all music genres. Since its launch in 1970, NPR
+		has become a leader in representation and technology development in
+		the public media community, assuring that the unique mission of
+		nonprofit public media is preserved and grows.</string>
+	<string name="msg_about_feedback">Send Feedback</string>
+	<string name="msg_about_privacy">Privacy</string>
+	<string name="msg_about_terms">Terms</string>
+
+	<string name="msg_error">Error</string>
+	<string name="msg_ok">Ok</string>
+	<string name="msg_parse_error">There was an error retrieving the requested
+		resource.</string>
+
+	<string name="msg_api_key_error">
+		To run the NPR app register for an account at
+		<a href="http://npr.org/api">npr.org/api</a>
+		.
+		Then login, go to \"Manage\" and click \"Generate Key.\"
+		Paste the key
+		into res/raw/api_key.txt
+	</string>
+	<string name="msg_item_added_to_playlist">Item added to playlist</string>
+
+	<array name="genre_entry">
+		<item>古典</item>
+		<item>轻音乐</item>
+		<item>电子</item>
+		<item>民谣</item>
+		<item>爵士</item>
+		<item>流行</item>
+		<item>说唱</item>
+		<item>摇滚</item>
+		<item>原声</item>
+		<item>世界音乐</item>
+	</array>
+
+	<array name="genre_value">
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+		<item>4</item>
+		<item>5</item>
+		<item>6</item>
+		<item>7</item>
+		<item>8</item>
+		<item>9</item>
+		<item>10</item>
+	</array>
+
 </resources>

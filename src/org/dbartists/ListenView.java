@@ -36,9 +36,9 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
 
-import org.npr.android.util.PlaylistEntry;
-
 import java.io.IOException;
+
+import org.dbartists.utils.PlaylistEntry;
 
 public class ListenView extends FrameLayout implements OnClickListener,
     OnSeekBarChangeListener, OnDrawerOpenListener, OnDrawerCloseListener {

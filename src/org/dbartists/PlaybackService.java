@@ -38,13 +38,6 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import org.npr.android.util.M3uParser;
-import org.npr.android.util.PlaylistEntry;
-import org.npr.android.util.PlaylistParser;
-import org.npr.android.util.PlaylistProvider;
-import org.npr.android.util.PlsParser;
-import org.npr.android.util.PlaylistProvider.Items;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -53,6 +46,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+
+import org.dbartists.utils.M3uParser;
+import org.dbartists.utils.PlaylistEntry;
+import org.dbartists.utils.PlaylistParser;
+import org.dbartists.utils.PlaylistProvider;
+import org.dbartists.utils.PlaylistProvider.Items;
+import org.dbartists.utils.PlsParser;
 
 public class PlaybackService extends Service implements OnPreparedListener,
     OnBufferingUpdateListener, OnCompletionListener, OnErrorListener,
@@ -214,7 +214,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
     CharSequence title = getString(R.string.app_name);
     Intent notificationIntent;
     if (current.storyID != null) {
-      notificationIntent = new Intent(this, NewsStoryActivity.class);
+      notificationIntent = new Intent(this, ArtistsListActivity.class);
       notificationIntent.putExtra(Constants.EXTRA_STORY_ID, current.storyID);
       notificationIntent.putExtra(Constants.EXTRA_DESCRIPTION,
           R.string.msg_main_subactivity_nowplaying);

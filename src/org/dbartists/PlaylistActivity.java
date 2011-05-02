@@ -14,6 +14,11 @@
 
 package org.dbartists;
 
+import org.dbartists.utils.PlaylistProvider;
+import org.dbartists.utils.PlaylistProvider.Items;
+import org.dbartists.utils.Tracker;
+import org.dbartists.utils.Tracker.ActivityMeasurement;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -30,11 +35,6 @@ import android.widget.RadioButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-
-import org.npr.android.util.PlaylistProvider;
-import org.npr.android.util.Tracker;
-import org.npr.android.util.PlaylistProvider.Items;
-import org.npr.android.util.Tracker.ActivityMeasurement;
 
 public class PlaylistActivity extends Activity implements OnClickListener,
     OnCheckedChangeListener, OnItemClickListener, Trackable {

@@ -7,18 +7,13 @@
   android:background="@drawable/header"
   android:layout_gravity="center">
   
-  <ImageView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/Logo1"
-    android:src="@drawable/npr" android:layout_marginLeft="15dip" android:layout_gravity="center_vertical"></ImageView>
-  <ImageView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:src="@drawable/news"
-    android:id="@+id/Logo2"
-    android:layout_marginLeft="5dip"
-    android:layout_gravity="center"></ImageView>
+<!--  <ImageView-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:src="@drawable/news"-->
+<!--    android:id="@+id/Logo2"-->
+<!--    android:layout_marginLeft="5dip"-->
+<!--    android:layout_gravity="center"></ImageView>-->
   <LinearLayout
     android:id="@+id/LinearLayout02"
     android:layout_width="wrap_content"

@@ -26,10 +26,10 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
-import org.npr.android.util.PlaylistEntry;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import org.dbartists.utils.PlaylistEntry;
 
 /**
  * @author mfrederick@google.com (Michael Frederick)

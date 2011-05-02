@@ -14,6 +14,8 @@
 
 package org.dbartists;
 
+import java.util.Map;
+
 public class Constants {
   public static final String EXTRA_SUBACTIVITY_ID = "subactivity_id";
   public static final String EXTRA_STATION_ID = "station_id";
@@ -26,6 +28,13 @@ public class Constants {
   public static final String EXTRA_DESCRIPTION = "extra_description";
   public static final String EXTRA_GROUPING = "extra_grouping";
   public static final String EXTRA_SIZE = "extra_size";
+  
+  public static final String EXTRA_GENRE_ID = "genre_id";
+  public static final String EXTRA_PAGE = "page";
+  
+  public static final String GENRE_ARTIST_API_URL = "http://dbmusician.sinaapp.com/artists.php";
+  public static final String ARTIST_MP3_API_URL = "http://dbmusician.sinaapp.com/db.php";
+  
 
   private Constants() {
     // no instantiation
