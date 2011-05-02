@@ -23,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,11 +116,26 @@ public class TrackListActivity extends PlayerActivity implements
 	private void playTrack(Track track, boolean playNow) {
 		String url = track.getUrl();
 		Log.d(TAG, "play now: " + url);
-		PlaylistEntry entry = new PlaylistEntry(-1, url, track.getName(),
-				true, -1, track.getUrl());
+		PlaylistEntry entry = new PlaylistEntry(-1, url, track.getName(), true,
+				-1, track.getUrl());
 		if (playNow) {
 			this.listen(entry);
 		}
+
+		int i = track.getId() + 1;
+		List<PlaylistEntry> entries = new ArrayList<PlaylistEntry>();
+		while (true) {
+			Track t = trackCache.get(i++);
+			if (t == null)
+				break;
+			PlaylistEntry e = new PlaylistEntry(-1, url, t.getName(), true,
+					-1, t.getUrl());
+			entries.add(e);
+		}
+		
+		if (entries.size() > 0)
+			this.addToPlayList(entries);
+		
 	}
 
 	@Override

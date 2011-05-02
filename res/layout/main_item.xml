@@ -1,22 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="wrap_content"
-  android:orientation="vertical">
-  <TextView
-    android:id="@+id/MainItemTextTopic"
-    android:textSize="12pt"
-    android:textStyle="bold"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="10dip"
-    android:layout_marginRight="10dip" />
-  <TextView
-    android:id="@+id/MainItemTextDescription"
-    android:textSize="9pt"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="15dip"
-    android:layout_marginRight="15dip" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:gravity="center_vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:background="@color/white">
+	<TextView android:id="@+id/list_content" android:textColor="@color/black"
+		android:textSize="24sp" android:gravity="center_vertical"
+		android:text="sample" android:padding="4dip" android:layout_margin="4dip"
+		android:layout_width="fill_parent" android:layout_height="48sp" />
 </LinearLayout>

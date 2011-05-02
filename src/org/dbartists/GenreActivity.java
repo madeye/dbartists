@@ -41,7 +41,7 @@ public class GenreActivity extends PlayerActivity implements
 		int type = getIntent().getIntExtra(Constants.EXTRA_SUBACTIVITY_ID, -1);
 		super.onCreate(savedInstanceState);
 		ViewGroup container = (ViewGroup) findViewById(R.id.Content);
-		ViewGroup.inflate(this, R.layout.news_topics, container);
+		ViewGroup.inflate(this, R.layout.basic_list, container);
 		listView = (ListView) findViewById(R.id.ListView01);
 
 		Resources res = getResources();
@@ -97,8 +97,8 @@ public class GenreActivity extends PlayerActivity implements
 
 	private class GenreListAdapter extends ArrayAdapter<SubActivity> {
 		public GenreListAdapter(SubActivity[] activities) {
-			super(GenreActivity.this, android.R.layout.simple_list_item_1,
-					android.R.id.text1, activities);
+			super(GenreActivity.this, R.layout.main_item,
+					R.id.list_content, activities);
 		}
 	}
 

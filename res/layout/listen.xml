@@ -21,6 +21,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/msg_listen_nothing"
+      android:textColor="@color/black"
       android:textStyle="italic"
       android:layout_gravity="left|center_vertical"
       android:ellipsize="marquee" android:singleLine="true"/>
@@ -61,19 +62,21 @@
         android:layout_width="wrap_content"
         android:src="@android:drawable/ic_media_play"
         android:scaleType="centerInside"
+        android:layout_marginLeft="10dip"
         android:layout_height="48dip" />
       <Button
         android:id="@+id/StreamPlaylistButton"
         android:text="@string/msg_listen_playlist"
         android:layout_width="wrap_content"
+        android:layout_marginLeft="10dip"
         android:layout_height="48dip"></Button>
-      <ImageButton
+      <!-- ImageButton
         android:id="@+id/StreamShareButton"
         android:layout_width="wrap_content"
         android:layout_marginLeft="10dip"
         android:src="@android:drawable/ic_menu_share"
         android:scaleType="centerInside"
-        android:layout_height="48dip" />
+        android:layout_height="48dip" /-->
     </LinearLayout>
   </LinearLayout>
 </SlidingDrawer>

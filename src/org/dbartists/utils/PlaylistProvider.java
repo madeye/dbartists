@@ -31,7 +31,7 @@ import android.util.Log;
 
 public class PlaylistProvider extends ContentProvider {
   public static final Uri CONTENT_URI = Uri
-      .parse("content://org.npr.android.util.Playlist");
+      .parse("content://org.dbartists.utils.Playlist");
   private static final String DATABASE_NAME = "playlist.db";
   protected static final int DATABASE_VERSION = 2;
   protected static final String TABLE_NAME = "items";

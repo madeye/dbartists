@@ -16,6 +16,8 @@ package org.dbartists;
 
 import java.util.Map;
 
+import android.content.IntentFilter;
+
 public class Constants {
   public static final String EXTRA_SUBACTIVITY_ID = "subactivity_id";
   public static final String EXTRA_STATION_ID = "station_id";
@@ -36,6 +38,10 @@ public class Constants {
   public static final String EXTRA_ARTIST_URL = "artist_url";
   public static final String EXTRA_ARTIST_IMG = "artist_img";
   
+  public static final String EXTRA_TRACK_NAME = "track_name";
+  public static final String EXTRA_TRACK_URL = "track_url";
+  public static final String REMOTE_PLAY_ACTION = "org.dbartists.REMOTE_PLAY_ACTION";
+  public static final IntentFilter REMOTE_PLAY_FILTER = new IntentFilter(REMOTE_PLAY_ACTION);
   
   public static final String GENRE_ARTIST_API_URL = "http://dbmusician.sinaapp.com/artists.php";
   public static final String TOP_ARTIST_API_URL = "http://dbmusician.sinaapp.com/topartists.php";

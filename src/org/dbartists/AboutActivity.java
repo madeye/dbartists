@@ -49,38 +49,6 @@ public class AboutActivity extends Activity {
     map.put(getString(R.string.msg_about_version_name), getVersionName());
     map.put(getString(R.string.msg_about_version_code), "" + getVersionCode());
     populateField(map, tv);
-
-    Button terms = (Button) findViewById(R.id.TermsButton);
-    terms.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(AboutActivity.this);
-        builder.setTitle(R.string.msg_about_terms);
-        builder.setMessage(FileUtils.readFile(AboutActivity.this, R.raw.terms));
-        builder.create().show();
-      }
-    });
-    Button privacy = (Button) findViewById(R.id.PrivacyButton);
-    privacy.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(AboutActivity.this);
-        builder.setTitle(R.string.msg_about_privacy);
-        builder.setMessage(FileUtils.readFile(AboutActivity.this, R.raw.privacy));
-        builder.create().show();
-      }
-    });
-
-    Button feedback = (Button) findViewById(R.id.FeedbackButton);
-    feedback.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        Intent i =
-            new Intent(Intent.ACTION_VIEW, Uri
-                .parse("http://m.npr.org/contact/index"));
-        AboutActivity.this.startActivity(i);
-      }
-    });
   }
 
   private void populateField(Map<String, String> values, TextView view) {

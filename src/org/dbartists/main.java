@@ -94,8 +94,6 @@ public class Main extends PlayerActivity implements OnItemClickListener {
 		ViewGroup.inflate(this, R.layout.main_inner, container);
 
 		listView = (ListView) findViewById(R.id.MainListView);
-		String grouping = null;
-		String description = "Top Stories";
 		String topicId = "1002";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("id", topicId);
@@ -128,8 +126,8 @@ public class Main extends PlayerActivity implements OnItemClickListener {
 
 	private class MainListAdapter extends ArrayAdapter<SubActivity> {
 		public MainListAdapter(SubActivity[] activities) {
-			super(Main.this, android.R.layout.simple_list_item_1,
-					android.R.id.text1, activities);
+			super(Main.this, R.layout.main_item,
+					R.id.list_content, activities);
 		}
 	}
 
