@@ -5,21 +5,14 @@
   android:gravity="center_vertical"
   android:minHeight="?android:attr/listPreferredItemHeight">
   <ImageView
-    android:id="@+id/StationItemPlayableImage"
+    android:id="@+id/TrackItemStatusImage"
     android:layout_width="16dip"
     android:layout_height="16dip"
     android:src="@drawable/icon_listen_main"
     android:layout_marginLeft="3dip"
     android:layout_gravity="center_vertical"></ImageView>
-  <ImageView
-    android:id="@+id/StationItemPlaceholderImage"
-    android:layout_width="16dip"
-    android:layout_height="16dip"
-    android:src="@drawable/bullet"
-    android:layout_marginLeft="3dip"
-    android:layout_gravity="center_vertical"></ImageView>
   <TextView
-    android:id="@+id/StationItemNameText"
+    android:id="@+id/TrackItemNameText"
     android:paddingLeft="5dip"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"

@@ -60,7 +60,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
   private static final String LOG_TAG = PlaybackService.class.getName();
 
-  private static final String SERVICE_PREFIX = "org.npr.android.news.";
+  private static final String SERVICE_PREFIX = "org.dbartists.";
   public static final String SERVICE_CHANGE_NAME = SERVICE_PREFIX + "CHANGE";
   public static final String SERVICE_CLOSE_NAME = SERVICE_PREFIX + "CLOSE";
   public static final String SERVICE_UPDATE_NAME = SERVICE_PREFIX + "UPDATE";

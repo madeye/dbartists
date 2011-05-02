@@ -32,7 +32,13 @@ public class Constants {
   public static final String EXTRA_GENRE_ID = "genre_id";
   public static final String EXTRA_PAGE = "page";
   
+  public static final String EXTRA_ARTIST_NAME = "artist_name";
+  public static final String EXTRA_ARTIST_URL = "artist_url";
+  public static final String EXTRA_ARTIST_IMG = "artist_img";
+  
+  
   public static final String GENRE_ARTIST_API_URL = "http://dbmusician.sinaapp.com/artists.php";
+  public static final String TOP_ARTIST_API_URL = "http://dbmusician.sinaapp.com/topartists.php";
   public static final String ARTIST_MP3_API_URL = "http://dbmusician.sinaapp.com/db.php";
   
 

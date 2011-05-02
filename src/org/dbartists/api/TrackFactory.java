@@ -12,13 +12,13 @@ import java.util.List;
 
 import android.util.Log;
 
-public class ArtistFactory {
+public class TrackFactory {
 
-	public static final String TAG = "ArtistFactory";
+	public static final String TAG = "TrackFactory";
 
-	public static List<Artist> downloadArtists(String url, int startId) {
+	public static List<Track> downloadTracks(String url, int startId) {
 		Log.d(TAG, "url: " + url);
-		ArrayList<Artist> list = new ArrayList<Artist>();
+		ArrayList<Track> list = new ArrayList<Track>();
 		try {
 			URL aURL = new URL(url);
 			HttpURLConnection conn = (HttpURLConnection) aURL.openConnection();
@@ -29,39 +29,48 @@ public class ArtistFactory {
 			String line = reader.readLine();
 			if (line == null)
 				return null;
-			if (!line.startsWith("#genre"))
+			if (!line.startsWith("#artist"))
 				return null;
 			reader.readLine();
 			line = reader.readLine();
-			if (!line.startsWith("#artists"))
+			if (!line.startsWith("#titles"))
 				return null;
-
-			// fetch artists
-			int n = 0;
+			
+			ArrayList<String> titles = new ArrayList<String>();
+			ArrayList<String> urls = new ArrayList<String>();
+			
+			// fetch titles
 			while (true) {
-
-				// artist name
+				// title
 				line = reader.readLine();
 				if (line == null)
 					break;
-				String name = line.trim();
-
-				// artist image
-				line = reader.readLine();
-				String img = line.trim();
-
-				// artist image
-				line = reader.readLine();
-				String site = line.trim();
-
-				Artist art = new Artist(startId + n, name, img, site);
-				list.add(art);
-				n++;
+				if (line.startsWith("#urls"))
+					break;
+				titles.add(line.trim());
 			}
+			
+			// fetch urls
+			while (true) {
+				// title
+				line = reader.readLine();
+				if (line == null)
+					break;
+				urls.add(line.trim());
+			}
+			
+			for (int n = 0; n < titles.size(); n++) {
+				Log.d(TAG, "track: " + titles.get(n) + " url: " + urls.get(n));
+				list.add(new Track(startId + n, titles.get(n), urls.get(n)));
+			}
+				
+				
 		} catch (MalformedURLException e) {
 			Log.e(TAG, "url error:", e);
 		} catch (IOException e) {
 			Log.e(TAG, "fetch error", e);
+		} catch (IndexOutOfBoundsException e) {
+			Log.e(TAG, "decode error", e);
 		}
 		return list;
 	}

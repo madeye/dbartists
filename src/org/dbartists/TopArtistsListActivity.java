@@ -32,10 +32,10 @@ import org.dbartists.api.Artist;
 import org.dbartists.api.ArtistFactory;
 import org.dbartists.utils.Tracker;
 
-public class ArtistsListActivity extends PlayerActivity implements
+public class TopArtistsListActivity extends PlayerActivity implements
 		OnItemClickListener {
 
-	private final static String TAG = "ArtistsListActivity";
+	private final static String TAG = "TopArtistsListActivity";
 	private String apiUrl = Constants.GENRE_ARTIST_API_URL;
 	private int genreId = 1;
 	private int page = 1;
@@ -82,7 +82,7 @@ public class ArtistsListActivity extends PlayerActivity implements
 
 		ListView listView = (ListView) findViewById(R.id.ListView01);
 		listView.setOnItemClickListener(this);
-		listAdapter = new ArtistsListAdapter(ArtistsListActivity.this);
+		listAdapter = new ArtistsListAdapter(TopArtistsListActivity.this);
 		listView.setAdapter(listAdapter);
 
 		addArtists();
