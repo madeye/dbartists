@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.lang.reflect.InvocationTargetException;
@@ -32,14 +33,17 @@ import java.util.List;
 
 import org.dbartists.utils.PlaylistEntry;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
+
 /**
  * @author mfrederick@google.com (Michael Frederick)
  * 
  *         A base class for all Activities that want to display the default
  *         layout, including the ListenView.
  */
-public abstract class PlayerActivity extends ActivityGroup implements
-		Trackable, Refreshable {
+public abstract class PlayerActivity extends ActivityGroup implements Refreshable {
 	private TextView titleText;
 
 	public abstract CharSequence getMainTitle();
@@ -59,6 +63,18 @@ public abstract class PlayerActivity extends ActivityGroup implements
 		setContentView(R.layout.main);
 		titleText = (TextView) findViewById(R.id.LogoNavText);
 		titleText.setText(getMainTitle());
+		
+		// Create the adView
+		AdView adView = new AdView(this, AdSize.BANNER, "a14dbe96b16a891");
+		// Lookup your LinearLayout assuming it¡¯s been given
+		// the attribute android:id="@+id/mainLayout"
+		LinearLayout layout = (LinearLayout) findViewById(R.id.ad);
+		// Add the adView to it
+		layout.addView(adView);
+		// Initiate a generic request to load it with an ad
+		AdRequest aq = new AdRequest();
+		// aq.setTesting(true);
+		adView.loadAd(aq);
 
 		listenView = new ListenView(this);
 		((ViewGroup) findViewById(R.id.MediaPlayer)).addView(listenView,
@@ -73,10 +89,6 @@ public abstract class PlayerActivity extends ActivityGroup implements
 
 	@Override
 	public void refresh() {
-	}
-
-	@Override
-	public void trackNow() {
 	}
 
 	@Override

@@ -17,8 +17,6 @@ package org.dbartists;
 import org.dbartists.utils.PlaylistEntry;
 import org.dbartists.utils.PlaylistProvider;
 import org.dbartists.utils.PlaylistProvider.Items;
-import org.dbartists.utils.Tracker;
-import org.dbartists.utils.Tracker.ActivityMeasurement;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -42,7 +40,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class PlaylistActivity extends Activity implements OnClickListener,
-		OnCheckedChangeListener, OnItemClickListener, Trackable {
+		OnCheckedChangeListener, OnItemClickListener {
 	private static final String LOG_TAG = PlaylistActivity.class.getName();
 	private boolean filterUnread = true;
 	
@@ -62,7 +60,6 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 		readButton.setOnCheckedChangeListener(this);
 
 		refreshList();
-		trackNow();
 	}
 
 	private void refreshList() {
@@ -109,7 +106,6 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 			refreshList();
 			break;
 		}
-		trackNow();
 	}
 
 	@Override
@@ -130,14 +126,5 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 		}
 		// TODO: play audio
 		finish();
-	}
-
-	@Override
-	public void trackNow() {
-		StringBuilder pageName = new StringBuilder("Playlist");
-		String description = filterUnread ? "Active" : "Listened To";
-		pageName.append(Tracker.PAGE_NAME_SEPARATOR).append(description);
-		Tracker.instance(getApplication()).trackPage(
-				new ActivityMeasurement(pageName.toString(), "Playlist"));
 	}
 }

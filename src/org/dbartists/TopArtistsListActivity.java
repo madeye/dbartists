@@ -30,7 +30,6 @@ import java.util.Map;
 
 import org.dbartists.api.Artist;
 import org.dbartists.api.ArtistFactory;
-import org.dbartists.utils.Tracker;
 
 public class TopArtistsListActivity extends PlayerActivity implements
 		OnItemClickListener {
@@ -112,15 +111,6 @@ public class TopArtistsListActivity extends PlayerActivity implements
 	public CharSequence getMainTitle() {
 		Log.d(TAG, description);
 		return description;
-	}
-
-	@Override
-	public void trackNow() {
-		StringBuilder pageName = new StringBuilder("News")
-				.append(Tracker.PAGE_NAME_SEPARATOR);
-		pageName.append(description);
-		// Tracker.instance(getApplication()).trackPage(
-		// new ArtistListMeasurement(pageName.toString(), "News", topicId));
 	}
 
 	@Override

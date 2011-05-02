@@ -30,7 +30,6 @@ import java.util.Map;
 
 import org.dbartists.api.Artist;
 import org.dbartists.api.ArtistFactory;
-import org.dbartists.utils.Tracker;
 
 public class ArtistsListActivity extends PlayerActivity implements
 		OnItemClickListener {
@@ -75,7 +74,7 @@ public class ArtistsListActivity extends PlayerActivity implements
 		Resources res = getResources();
 		String[] genre_entries = res.getStringArray(R.array.genre_entry);
 		description = genre_entries[genreId - 1];
-		
+
 		super.onCreate(savedInstanceState);
 		ViewGroup container = (ViewGroup) findViewById(R.id.Content);
 		ViewGroup.inflate(this, R.layout.items, container);
@@ -86,7 +85,6 @@ public class ArtistsListActivity extends PlayerActivity implements
 		listView.setAdapter(listAdapter);
 
 		addArtists();
-		
 
 	}
 
@@ -97,11 +95,11 @@ public class ArtistsListActivity extends PlayerActivity implements
 		if (s == null) {
 			addArtists();
 		} else {
-			 Intent i = new Intent(this, TrackListActivity.class);
-			 i.putExtra(Constants.EXTRA_ARTIST_NAME, s.getName());
-			 i.putExtra(Constants.EXTRA_ARTIST_IMG, s.getImg());
-			 i.putExtra(Constants.EXTRA_ARTIST_URL, s.getUrl());
-			 startActivityWithoutAnimation(i);
+			Intent i = new Intent(this, TrackListActivity.class);
+			i.putExtra(Constants.EXTRA_ARTIST_NAME, s.getName());
+			i.putExtra(Constants.EXTRA_ARTIST_IMG, s.getImg());
+			i.putExtra(Constants.EXTRA_ARTIST_URL, s.getUrl());
+			startActivityWithoutAnimation(i);
 		}
 	}
 
@@ -118,15 +116,6 @@ public class ArtistsListActivity extends PlayerActivity implements
 	public CharSequence getMainTitle() {
 		Log.d(TAG, description);
 		return description;
-	}
-
-	@Override
-	public void trackNow() {
-		StringBuilder pageName = new StringBuilder("News")
-				.append(Tracker.PAGE_NAME_SEPARATOR);
-		pageName.append(description);
-		// Tracker.instance(getApplication()).trackPage(
-		// new ArtistListMeasurement(pageName.toString(), "News", topicId));
 	}
 
 	@Override

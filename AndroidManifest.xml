@@ -23,6 +23,8 @@
 		<activity android:name=".TopArtistsListActivity"
 			android:label="@string/app_name" />
 		<activity android:name=".AboutActivity" android:label="@string/app_name" />
+		<activity android:name="com.google.ads.AdActivity"
+			android:configChanges="keyboard|keyboardHidden|orientation" />
 
 		<provider android:name="org.dbartists.utils.PlaylistProvider"
 			android:authorities="org.dbartists.utils.Playlist"></provider>

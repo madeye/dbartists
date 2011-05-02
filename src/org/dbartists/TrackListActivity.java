@@ -30,8 +30,6 @@ import java.util.Map;
 
 import org.dbartists.api.Track;
 import org.dbartists.utils.PlaylistEntry;
-import org.dbartists.utils.Tracker;
-import org.dbartists.utils.Tracker.LinkEvent;
 
 public class TrackListActivity extends PlayerActivity implements
 		OnItemClickListener {
@@ -101,16 +99,6 @@ public class TrackListActivity extends PlayerActivity implements
 	@Override
 	public CharSequence getMainTitle() {
 		return artistName;
-	}
-
-	@Override
-	public void trackNow() {
-		StringBuilder pageName = new StringBuilder("News")
-				.append(Tracker.PAGE_NAME_SEPARATOR);
-		// pageName.append(grouping).append(Tracker.PAGE_NAME_SEPARATOR);
-		// pageName.append(description);
-		// Tracker.instance(getApplication()).trackPage(
-		// new StoryListMeasurement(pageName.toString(), "News", topicId));
 	}
 
 	private void playTrack(Track track, boolean playNow) {

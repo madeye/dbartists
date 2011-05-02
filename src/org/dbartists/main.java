@@ -41,9 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.dbartists.utils.Tracker;
-import org.dbartists.utils.Tracker.ActivityMeasurement;
-
 public class Main extends PlayerActivity implements OnItemClickListener {
 
 	private static final String LOG_TAG = Main.class.getName();
@@ -113,7 +110,6 @@ public class Main extends PlayerActivity implements OnItemClickListener {
 										R.string.msg_main_subactivity_pop)) };
 		listView.setAdapter(new MainListAdapter(activities));
 		listView.setOnItemClickListener(this);
-		trackNow();
 	}
 
 	@Override
@@ -136,13 +132,6 @@ public class Main extends PlayerActivity implements OnItemClickListener {
 		return getString(R.string.msg_main_logo);
 	}
 
-	@Override
-	public void trackNow() {
-		StringBuilder pageName = new StringBuilder("Home Screen");
-		Tracker.instance(getApplication()).trackPage(
-				new ActivityMeasurement(pageName.toString(), "Home"));
-	}
-
 	private void playHourly() {
 		// Request to stream audio
 		// TODO: Play audio
@@ -158,7 +147,6 @@ public class Main extends PlayerActivity implements OnItemClickListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		Tracker.instance(getApplication()).finish();
 	}
 
 }

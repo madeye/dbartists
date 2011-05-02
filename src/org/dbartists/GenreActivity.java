@@ -14,8 +14,6 @@
 
 package org.dbartists;
 
-import org.dbartists.utils.Tracker;
-import org.dbartists.utils.Tracker.ActivityMeasurement;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -63,13 +61,6 @@ public class GenreActivity extends PlayerActivity implements
 	@Override
 	public CharSequence getMainTitle() {
 		return getString(R.string.msg_genre);
-	}
-
-	@Override
-	public void trackNow() {
-		StringBuilder pageName = new StringBuilder("Genre");
-		// Tracker.instance(getApplication()).trackPage(
-		// new ActivityMeasurement(pageName.toString(), "News"));
 	}
 
 	@Override
