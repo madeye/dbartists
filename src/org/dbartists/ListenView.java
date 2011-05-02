@@ -51,7 +51,7 @@ public class ListenView extends FrameLayout implements OnClickListener,
 
 	private static final String LOG_TAG = ListenView.class.getName();
 
-//	private ImageButton streamButton;
+	// private ImageButton streamButton;
 	private ImageButton playButton;
 	private SeekBar progressBar;
 	private TextView infoText;
@@ -80,9 +80,9 @@ public class ListenView extends FrameLayout implements OnClickListener,
 		playButton = (ImageButton) findViewById(R.id.StreamPlayButton);
 		playButton.setEnabled(false);
 		playButton.setOnClickListener(this);
-//		streamButton = (ImageButton) findViewById(R.id.StreamShareButton);
-//		streamButton.setOnClickListener(this);
-//		streamButton.setEnabled(false);
+		// streamButton = (ImageButton) findViewById(R.id.StreamShareButton);
+		// streamButton.setOnClickListener(this);
+		// streamButton.setEnabled(false);
 
 		Button playlistButton = (Button) findViewById(R.id.StreamPlaylistButton);
 		playlistButton.setOnClickListener(this);
@@ -126,7 +126,8 @@ public class ListenView extends FrameLayout implements OnClickListener,
 				new IntentFilter(PlaybackService.SERVICE_UPDATE_NAME));
 		getContext().registerReceiver(closeReceiver,
 				new IntentFilter(PlaybackService.SERVICE_CLOSE_NAME));
-		getContext().registerReceiver(remotePlayReceiver, Constants.REMOTE_PLAY_FILTER);
+		getContext().registerReceiver(remotePlayReceiver,
+				Constants.REMOTE_PLAY_FILTER);
 	}
 
 	@Override
@@ -168,16 +169,16 @@ public class ListenView extends FrameLayout implements OnClickListener,
 			getContext().startActivity(
 					new Intent(getContext(), PlaylistActivity.class));
 			break;
-//		case R.id.StreamShareButton:
-//			Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-//			// shareIntent.putExtra(Intent.EXTRA_SUBJECT, current.title);
-//			// shareIntent.putExtra(Intent.EXTRA_TEXT, String.format("%s: %s",
-//			// current.title, current.url));
-//			shareIntent.setType("text/plain");
-//			getContext().startActivity(
-//					Intent.createChooser(shareIntent,
-//							getContext().getString(R.string.msg_share_story)));
-//			break;
+		// case R.id.StreamShareButton:
+		// Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+		// // shareIntent.putExtra(Intent.EXTRA_SUBJECT, current.title);
+		// // shareIntent.putExtra(Intent.EXTRA_TEXT, String.format("%s: %s",
+		// // current.title, current.url));
+		// shareIntent.setType("text/plain");
+		// getContext().startActivity(
+		// Intent.createChooser(shareIntent,
+		// getContext().getString(R.string.msg_share_story)));
+		// break;
 		}
 	}
 
@@ -196,7 +197,7 @@ public class ListenView extends FrameLayout implements OnClickListener,
 			}
 		}
 	}
-	
+
 	protected void addToPlayList(List<PlaylistEntry> entries) {
 		for (PlaylistEntry entry : entries)
 			addPlaylistItem(entry);
@@ -256,15 +257,25 @@ public class ListenView extends FrameLayout implements OnClickListener,
 			infoText.setText(null);
 		}
 	}
-	
+
 	private class RemotePlayReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String name = intent.getStringExtra(Constants.EXTRA_TRACK_NAME);
 			String url = intent.getStringExtra(Constants.EXTRA_TRACK_URL);
-			PlaylistEntry e = new PlaylistEntry(-1, url, name, true,
-					-1, url);
-			listen(e);
+			PlaylistEntry entry = new PlaylistEntry(-1, url, name, true, -1, url);
+			if (player != null) {
+				try {
+					player.setCurrent(entry);
+					player.listen(entry.url, entry.isStream);
+				} catch (IllegalArgumentException e) {
+					Log.e(LOG_TAG, "", e);
+				} catch (IllegalStateException e) {
+					Log.e(LOG_TAG, "", e);
+				} catch (IOException e) {
+					Log.e(LOG_TAG, "", e);
+				}
+			}
 		}
 	}
 
