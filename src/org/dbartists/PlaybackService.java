@@ -261,8 +261,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		cleanup();
 	}
 
-	
-	
 	/**
 	 * Start listening to the given URL.
 	 */
@@ -275,16 +273,26 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 		Log.d(LOG_TAG, "listening to " + url + " stream=" + stream);
 		String playUrl = url;
-		// From 2.2 on (SDK ver 8), the local mediaplayer can handle Shoutcast
-		// streams natively. Let's detect that, and not proxy.
-		Log.d(LOG_TAG, "SDK Version " + Build.VERSION.SDK);
-		int sdkVersion = 0;
-		try {
-			sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-		} catch (NumberFormatException e) {
-		}
+		// // From 2.2 on (SDK ver 8), the local mediaplayer can handle
+		// Shoutcast
+		// // streams natively. Let's detect that, and not proxy.
+		// Log.d(LOG_TAG, "SDK Version " + Build.VERSION.SDK);
+		// int sdkVersion = 0;
+		// try {
+		// sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+		// } catch (NumberFormatException e) {
+		// }
 
-		if (stream && sdkVersion < 8) {
+		URL remote = new URL(url);
+		URLConnection urlConnection = remote.openConnection();
+		urlConnection.connect();
+		int file_size = urlConnection.getContentLength();
+
+		File f = new File(StreamProxy.getFileName(url));
+
+		if (f.exists() && f.length() == file_size) {
+			playUrl = f.getAbsolutePath();
+		} else {
 			if (proxy == null) {
 				proxy = new StreamProxy();
 				proxy.init();
