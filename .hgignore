@@ -1,0 +1,5 @@
+
+syntax: regexp
+^proguard$
+syntax: regexp
+^gen$

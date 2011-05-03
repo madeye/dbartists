@@ -108,7 +108,11 @@ public class Main extends PlayerActivity implements OnItemClickListener {
 				new SubActivity(
 						new Intent(this, TopArtistsListActivity.class)
 								.putExtra(Constants.EXTRA_SUBACTIVITY_ID,
-										R.string.msg_main_subactivity_pop)) };
+										R.string.msg_main_subactivity_pop)),
+				new SubActivity(
+						new Intent(this, SearchArtistsListActivity.class)
+								.putExtra(Constants.EXTRA_SUBACTIVITY_ID,
+										R.string.msg_main_subactivity_search)), };
 		listView.setAdapter(new MainListAdapter(activities));
 		listView.setOnItemClickListener(this);
 		ProgressBar titleProgressBar;
@@ -128,8 +132,7 @@ public class Main extends PlayerActivity implements OnItemClickListener {
 
 	private class MainListAdapter extends ArrayAdapter<SubActivity> {
 		public MainListAdapter(SubActivity[] activities) {
-			super(Main.this, R.layout.main_item,
-					R.id.list_content, activities);
+			super(Main.this, R.layout.main_item, R.id.list_content, activities);
 		}
 	}
 

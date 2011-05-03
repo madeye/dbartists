@@ -12,21 +12,21 @@
 	<string name="msg_station_search">Locate stations</string>
 	<string name="msg_station_search_by_local">Local stations</string>
 	<string name="msg_station_search_by_other">Call sign or zip code</string>
-	<string name="msg_station_search_now">Search!</string>
 	<string name="msg_station_podcasts">Podcasts</string>
 	<string name="msg_station_streams">Streams</string>
 
 	<string name="msg_refresh">刷新</string>
+	<string name="msg_search">搜索：</string>
+	<string name="msg_search_label">搜索音乐人</string>
+	<string name="msg_search_hint">键入音乐人名称</string>
+	<string name="msg_search_description">豆瓣音乐人</string>
 
 	<string name="msg_main_logo">主页</string>
 	<string name="msg_main_subactivity_top">最受欢迎音乐人</string>
 	<string name="msg_main_subactivity_pop">本周流行音乐人</string>
 	<string name="msg_main_subactivity_genre">按流派检索</string>
-	<string name="msg_main_subactivity_programs">Programs</string>
-	<string name="msg_main_subactivity_stations">Stations</string>
-	<string name="msg_main_subactivity_search">Search</string>
-	<string name="msg_main_subactivity_nowplaying">Now Playing</string>
-	<string name="msg_main_subactivity_hourly">Hourly News Summary</string>
+	<string name="msg_main_subactivity_search">搜索音乐人</string>
+	<string name="msg_main_subactivity_nowplaying">正在播放</string>
 
 	<string name="msg_main_menu_about">About</string>
 	<string name="msg_main_check_connection">Check connection and try again</string>
@@ -42,19 +42,6 @@
 	<string name="msg_playlist_unread">将要听到</string>
 	<string name="msg_playlist_read">播放历史</string>
 	<string name="msg_playlist_title">播放列表</string>
-
-	<string name="msg_podcast_dialog_title">Listen to podcast?</string>
-	<string name="msg_podcast_listen_now">Now</string>
-	<string name="msg_podcast_enqueue">Later</string>
-	<string name="msg_podcast_cancel">Cancel</string>
-
-	<string name="msg_search_title">Search results</string>
-	<string name="msg_search_description">Search by date and keywords</string>
-	<string name="msg_search_button">Search!</string>
-	<string name="msg_search_start_date">Start date</string>
-	<string name="msg_search_end_date">End date</string>
-	<string name="msg_search_term">Search terms</string>
-	<string name="msg_search_hint">e.g. Barack Obama</string>
 
 	<string name="msg_eula_accept">Accept</string>
 	<string name="msg_eula_refuse">Refuse</string>

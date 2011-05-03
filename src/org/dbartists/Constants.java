@@ -47,6 +47,7 @@ public class Constants {
   public static final String TOP_ARTIST_API_URL = "http://dbmusician.sinaapp.com/topartists.php";
   public static final String POP_ARTIST_API_URL = "http://dbmusician.sinaapp.com/popartists.php";
   public static final String ARTIST_MP3_API_URL = "http://dbmusician.sinaapp.com/db.php";
+  public static final String SEARCH_ARTIST_API_URL = "http://dbmusician.sinaapp.com/search.php";
   
 
   private Constants() {
