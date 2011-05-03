@@ -9,12 +9,17 @@
 		<LinearLayout android:layout_height="wrap_content"
 			android:layout_width="fill_parent" android:background="@drawable/title">
 			<TextView android:id="@+id/LogoNavText"
-				android:layout_height="wrap_content" android:layout_width="fill_parent"
-				android:text="Dummy Text" android:ellipsize="end" android:gravity="center_vertical"
-				android:layout_marginLeft="15dip" android:textAppearance="?android:attr/textAppearanceLarge"
-				android:textColor="#fff" android:singleLine="false"
-				android:paddingBottom="2dip">
+				android:layout_height="fill_parent" android:layout_width="wrap_content"
+				android:text="Dummy Text" android:gravity="center_vertical"
+				android:layout_marginLeft="10dip" android:textAppearance="?android:attr/textAppearanceLarge"
+				android:textColor="#fff" android:singleLine="true" android:padding="2dip">
 			</TextView>
+			<ProgressBar android:id="@+id/leadProgressBar"
+				style="?android:attr/progressBarStyleSmall" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:layout_margin="10px"
+				android:padding="2dip" android:gravity="center_vertical"
+				android:indeterminate="true"
+				android:visibility="visible"></ProgressBar>
 		</LinearLayout>
 	</LinearLayout>
 	<FrameLayout android:id="@+id/Content"

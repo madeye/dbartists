@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.dbartists.api.*;
@@ -48,7 +49,7 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 	private static Typeface headlineTypeface = null;
 
 	private final static int MSG_ARTISTS_LOADED = 0;
-	
+
 	private ImageLoader dm;
 
 	public ArtistsListAdapter(Context context) {
@@ -94,10 +95,18 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 		final TextView name = (TextView) convertView
 				.findViewById(R.id.artimstItemName);
 
+
+		ProgressBar titleProgressBar;
+		titleProgressBar = (ProgressBar) parent.getRootView()
+				.findViewById(R.id.leadProgressBar);
+		// hide the progress bar if it is not needed
+		titleProgressBar.setVisibility(ProgressBar.GONE);
+		
 		if (artist != null) {
-			
+
 			image.setTag(artist.getImg());
-			dm.DisplayImage(artist.getImg(),(Activity)convertView.getContext(), image);
+			dm.DisplayImage(artist.getImg(),
+					(Activity) convertView.getContext(), image);
 
 			name.setText(artist.getName());
 

@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.apache.http.client.ClientProtocolException;
@@ -80,6 +81,12 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 				.findViewById(R.id.TrackItemStatusImage);
 		TextView name = (TextView) convertView
 				.findViewById(R.id.TrackItemNameText);
+		
+		ProgressBar titleProgressBar;
+		titleProgressBar = (ProgressBar) parent.getRootView()
+				.findViewById(R.id.leadProgressBar);
+		// hide the progress bar if it is not needed
+		titleProgressBar.setVisibility(ProgressBar.GONE);
 
 		if (track != null) {
 			// image.setImageDrawable(getContext().getResources().getDrawable(

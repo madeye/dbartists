@@ -24,7 +24,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.reflect.InvocationTargetException;
@@ -59,6 +61,9 @@ public abstract class PlayerActivity extends ActivityGroup implements Refreshabl
 		// volume
 		// when a stream is not playing.
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		
+		//Remove title bar
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		setContentView(R.layout.main);
 		titleText = (TextView) findViewById(R.id.LogoNavText);

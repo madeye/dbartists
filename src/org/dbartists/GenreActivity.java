@@ -14,7 +14,6 @@
 
 package org.dbartists;
 
-
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -27,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class GenreActivity extends PlayerActivity implements
@@ -55,6 +55,12 @@ public class GenreActivity extends PlayerActivity implements
 
 		listView.setAdapter(new GenreListAdapter(activities));
 		listView.setOnItemClickListener(this);
+
+		ProgressBar titleProgressBar;
+		titleProgressBar = (ProgressBar) this
+				.findViewById(R.id.leadProgressBar);
+		// hide the progress bar if it is not needed
+		titleProgressBar.setVisibility(ProgressBar.GONE);
 
 	}
 
@@ -88,8 +94,8 @@ public class GenreActivity extends PlayerActivity implements
 
 	private class GenreListAdapter extends ArrayAdapter<SubActivity> {
 		public GenreListAdapter(SubActivity[] activities) {
-			super(GenreActivity.this, R.layout.main_item,
-					R.id.list_content, activities);
+			super(GenreActivity.this, R.layout.main_item, R.id.list_content,
+					activities);
 		}
 	}
 

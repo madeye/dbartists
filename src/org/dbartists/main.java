@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -110,6 +111,11 @@ public class Main extends PlayerActivity implements OnItemClickListener {
 										R.string.msg_main_subactivity_pop)) };
 		listView.setAdapter(new MainListAdapter(activities));
 		listView.setOnItemClickListener(this);
+		ProgressBar titleProgressBar;
+		titleProgressBar = (ProgressBar) this
+				.findViewById(R.id.leadProgressBar);
+		// hide the progress bar if it is not needed
+		titleProgressBar.setVisibility(ProgressBar.GONE);
 	}
 
 	@Override

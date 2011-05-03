@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:gravity="center_vertical" android:minHeight="?android:attr/listPreferredItemHeight"
-	android:background="@color/white">
+	android:background="@color/selector">
 	<ImageView android:id="@+id/TrackItemStatusImage"
 		android:layout_width="16dip" android:layout_height="16dip"
 		android:src="@drawable/icon_listen_main" android:layout_marginLeft="3dip"
