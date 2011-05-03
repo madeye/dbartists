@@ -122,7 +122,8 @@ public abstract class PlayerActivity extends ActivityGroup implements
 										PlayerActivity.this.finish();
 									}
 								});
-				builder.create();
+				AlertDialog alert = builder.create();
+				alert.show();
 			}
 		}
 
