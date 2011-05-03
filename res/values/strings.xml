@@ -15,12 +15,18 @@
 	<string name="msg_station_podcasts">Podcasts</string>
 	<string name="msg_station_streams">Streams</string>
 
+	<string name="msg_close_ad">打开/关闭广告</string>
+
 	<string name="msg_refresh">刷新</string>
 	<string name="msg_search">搜索：</string>
 	<string name="msg_search_label">搜索音乐人</string>
 	<string name="msg_search_hint">键入音乐人名称</string>
 	<string name="msg_search_description">豆瓣音乐人</string>
 	<string name="msg_search_more">搜索其他音乐人</string>
+
+	<string name="msg_allert">警告</string>
+	<string name="msg_alert_wifi">侦测到您此时不处于WIFI联网状态中。在移动网络环境中收听在线音频将会造成较大的支出，是否继续使用本应用？
+	</string>
 
 	<string name="msg_main_logo">主页</string>
 	<string name="msg_main_subactivity_top">最受欢迎音乐人</string>
@@ -29,7 +35,7 @@
 	<string name="msg_main_subactivity_search">搜索音乐人</string>
 	<string name="msg_main_subactivity_nowplaying">正在播放</string>
 
-	<string name="msg_main_menu_about">About</string>
+	<string name="msg_main_menu_about">关于</string>
 	<string name="msg_main_check_connection">Check connection and try again</string>
 
 	<string name="msg_share_story">Share this story</string>
@@ -60,7 +66,9 @@
 	</string>
 
 	<string name="msg_error">Error</string>
-	<string name="msg_ok">Ok</string>
+	<string name="msg_ignore">忽略</string>
+	<string name="msg_yes">是</string>
+	<string name="msg_no">否</string>
 	<string name="msg_parse_error">There was an error retrieving the requested
 		resource.</string>
 

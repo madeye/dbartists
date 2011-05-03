@@ -16,9 +16,17 @@ package org.dbartists;
 
 import android.app.Activity;
 import android.app.ActivityGroup;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,7 +53,8 @@ import com.google.ads.AdView;
  *         A base class for all Activities that want to display the default
  *         layout, including the ListenView.
  */
-public abstract class PlayerActivity extends ActivityGroup implements Refreshable {
+public abstract class PlayerActivity extends ActivityGroup implements
+		Refreshable {
 	protected TextView titleText;
 
 	public abstract CharSequence getMainTitle();
@@ -61,25 +70,61 @@ public abstract class PlayerActivity extends ActivityGroup implements Refreshabl
 		// volume
 		// when a stream is not playing.
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		
-		//Remove title bar
+
+		// Remove title bar
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		setContentView(R.layout.main);
 		titleText = (TextView) findViewById(R.id.LogoNavText);
 		titleText.setText(getMainTitle());
-		
-		// Create the adView
-		AdView adView = new AdView(this, AdSize.BANNER, "a14dbe96b16a891");
-		// Lookup your LinearLayout assuming it¡¯s been given
-		// the attribute android:id="@+id/mainLayout"
-		LinearLayout layout = (LinearLayout) findViewById(R.id.ad);
-		// Add the adView to it
-		layout.addView(adView);
-		// Initiate a generic request to load it with an ad
-		AdRequest aq = new AdRequest();
-		// aq.setTesting(true);
-		adView.loadAd(aq);
+
+		SharedPreferences settings = PreferenceManager
+				.getDefaultSharedPreferences(this);
+
+		if (!settings.getBoolean("close_ad", false)) {
+			// Create the adView
+			AdView adView = new AdView(this, AdSize.BANNER, "a14dbe96b16a891");
+			// Lookup your LinearLayout assuming it¡¯s been given
+			// the attribute android:id="@+id/mainLayout"
+			LinearLayout layout = (LinearLayout) findViewById(R.id.ad);
+			// Add the adView to it
+			layout.addView(adView);
+			// Initiate a generic request to load it with an ad
+			AdRequest aq = new AdRequest();
+			// aq.setTesting(true);
+			adView.loadAd(aq);
+		}
+
+		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+		if (networkInfo != null && !networkInfo.getTypeName().equals("WIFI")) {
+			if (!settings.getBoolean("ignore_wifi", false)) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setMessage(R.string.msg_alert_wifi)
+						.setCancelable(false)
+						.setTitle(getString(R.string.msg_allert))
+						.setPositiveButton(R.string.msg_yes,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										SharedPreferences settings = PreferenceManager
+												.getDefaultSharedPreferences(PlayerActivity.this);
+										Editor ed = settings.edit();
+										ed.putBoolean("ignore_wifi", true);
+										ed.commit();
+										dialog.cancel();
+									}
+								})
+						.setNegativeButton(R.string.msg_no,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										PlayerActivity.this.finish();
+									}
+								});
+				builder.create();
+			}
+		}
 
 		listenView = new ListenView(this);
 		((ViewGroup) findViewById(R.id.MediaPlayer)).addView(listenView,
@@ -131,7 +176,7 @@ public abstract class PlayerActivity extends ActivityGroup implements Refreshabl
 	}
 
 	private enum MenuId {
-		ABOUT, REFRESH
+		ABOUT, REFRESH, CLOSEAD
 	}
 
 	@Override
@@ -142,8 +187,13 @@ public abstract class PlayerActivity extends ActivityGroup implements Refreshabl
 				.setAlphabeticShortcut('a');
 		if (this.isRefreshable()) {
 			menu.add(Menu.NONE, MenuId.REFRESH.ordinal(), Menu.NONE,
-					R.string.msg_refresh).setAlphabeticShortcut('r');
+					R.string.msg_refresh).setAlphabeticShortcut('r')
+					.setIcon(R.drawable.reload);
 		}
+		menu.add(Menu.NONE, MenuId.CLOSEAD.ordinal(), Menu.NONE,
+				R.string.msg_close_ad)
+				.setIcon(android.R.drawable.ic_menu_close_clear_cancel)
+				.setAlphabeticShortcut('c');
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -154,14 +204,29 @@ public abstract class PlayerActivity extends ActivityGroup implements Refreshabl
 			return true;
 		} else if (item.getItemId() == MenuId.REFRESH.ordinal()) {
 			this.refresh();
+		} else if (item.getItemId() == MenuId.CLOSEAD.ordinal()) {
+			this.closeAd();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void closeAd() {
+		SharedPreferences settings = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		Editor ed = settings.edit();
+		if (settings.getBoolean("close_ad", false))
+			ed.putBoolean("close_ad", false);
+		else
+			ed.putBoolean("close_ad", true);
+		ed.commit();
+		LinearLayout layout = (LinearLayout) findViewById(R.id.ad);
+		layout.setVisibility(LinearLayout.GONE);
 	}
 
 	protected void listen(PlaylistEntry entry) {
 		listenView.listen(entry);
 	}
-	
+
 	protected void addToPlayList(List<PlaylistEntry> entries) {
 		listenView.addToPlayList(entries);
 	}
