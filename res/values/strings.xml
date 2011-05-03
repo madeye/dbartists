@@ -20,6 +20,7 @@
 	<string name="msg_search_label">搜索音乐人</string>
 	<string name="msg_search_hint">键入音乐人名称</string>
 	<string name="msg_search_description">豆瓣音乐人</string>
+	<string name="msg_search_more">搜索其他音乐人</string>
 
 	<string name="msg_main_logo">主页</string>
 	<string name="msg_main_subactivity_top">最受欢迎音乐人</string>

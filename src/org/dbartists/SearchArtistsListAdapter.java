@@ -44,7 +44,8 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 
 public class SearchArtistsListAdapter extends ArrayAdapter<Artist> {
-	private static final String LOG_TAG = SearchArtistsListAdapter.class.getName();
+	private static final String LOG_TAG = SearchArtistsListAdapter.class
+			.getName();
 	private LayoutInflater inflater;
 
 	private final static int MSG_ARTISTS_LOADED = 0;
@@ -65,11 +66,13 @@ public class SearchArtistsListAdapter extends ArrayAdapter<Artist> {
 			switch (msg.what) {
 			case MSG_ARTISTS_LOADED:
 				if (moreArtists != null) {
+					remove(null);
 					for (Artist t : moreArtists) {
 						if (getPosition(t) < 0) {
 							add(t);
 						}
 					}
+					add(null);
 				}
 				break;
 			}
@@ -88,10 +91,10 @@ public class SearchArtistsListAdapter extends ArrayAdapter<Artist> {
 				.findViewById(R.id.artistItemImage);
 		final TextView name = (TextView) convertView
 				.findViewById(R.id.artimstItemName);
-		
+
 		ProgressBar titleProgressBar;
-		titleProgressBar = (ProgressBar) parent.getRootView()
-				.findViewById(R.id.leadProgressBar);
+		titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
+				R.id.leadProgressBar);
 		// hide the progress bar if it is not needed
 		titleProgressBar.setVisibility(ProgressBar.GONE);
 
@@ -103,6 +106,11 @@ public class SearchArtistsListAdapter extends ArrayAdapter<Artist> {
 
 			name.setText(artist.getName());
 
+		} else {
+			// null marker means it's the end of the list.
+			Log.d(LOG_TAG, "search more");
+			image.setVisibility(View.INVISIBLE);
+			name.setText(R.string.msg_search_more);
 		}
 		return convertView;
 	}
@@ -119,8 +127,5 @@ public class SearchArtistsListAdapter extends ArrayAdapter<Artist> {
 
 	private void getMoreArtists(String url, int startId) {
 		moreArtists = ArtistFactory.downloadArtists(url, startId);
-		if (moreArtists != null) {
-			ArtistsListActivity.addAllToArtistCache(moreArtists);
-		}
 	}
 }

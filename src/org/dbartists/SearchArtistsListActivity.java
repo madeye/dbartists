@@ -42,29 +42,7 @@ public class SearchArtistsListActivity extends PlayerActivity implements
 	private String description;
 	private String searchKeywords;
 
-	protected TopArtistsListAdapter listAdapter;
-
-	private static Map<String, Artist> artistsCache = new HashMap<String, Artist>();
-
-	public static Artist getArtistFromCache(String artistId) {
-		Artist result = artistsCache.get(artistId);
-		if (result == null) {
-
-		}
-		return result;
-	}
-
-	public static void addAllToArtistCache(List<Artist> artists) {
-		for (Artist artist : artists) {
-			artistsCache.put(artist.getName(), artist);
-		}
-	}
-
-	@Override
-	public void onLowMemory() {
-		super.onLowMemory();
-		artistsCache.clear();
-	}
+	protected SearchArtistsListAdapter listAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +62,7 @@ public class SearchArtistsListActivity extends PlayerActivity implements
 
 		ListView listView = (ListView) findViewById(R.id.ListView01);
 		listView.setOnItemClickListener(this);
-		listAdapter = new TopArtistsListAdapter(SearchArtistsListActivity.this);
+		listAdapter = new SearchArtistsListAdapter(SearchArtistsListActivity.this);
 		listView.setAdapter(listAdapter);
 
 		addArtists();
@@ -100,14 +78,39 @@ public class SearchArtistsListActivity extends PlayerActivity implements
 	}
 
 	@Override
+	public void onNewIntent(Intent intent) {
+		String queryAction = intent.getAction();
+		if (queryAction.equals(Intent.ACTION_SEARCH)) {
+			searchKeywords = intent.getStringExtra(SearchManager.QUERY);
+			description = getString(R.string.msg_search);
+			ProgressBar titleProgressBar;
+			titleProgressBar = (ProgressBar) findViewById(R.id.leadProgressBar);
+			// hide the progress bar if it is not needed
+			titleProgressBar.setVisibility(ProgressBar.VISIBLE);
+			if (searchKeywords != null) {
+				apiUrl = Constants.SEARCH_ARTIST_API_URL + "?p="
+						+ URLEncoder.encode(searchKeywords.trim());
+				description = description + searchKeywords;
+				if (titleText != null)
+					titleText.setText(getMainTitle());
+				refresh();
+			}
+		}
+	}
+
+	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		Artist s = (Artist) parent.getAdapter().getItem(position);
-		Intent i = new Intent(this, TrackListActivity.class);
-		i.putExtra(Constants.EXTRA_ARTIST_NAME, s.getName());
-		i.putExtra(Constants.EXTRA_ARTIST_IMG, s.getImg());
-		i.putExtra(Constants.EXTRA_ARTIST_URL, s.getUrl());
-		startActivityWithoutAnimation(i);
+		if (s == null) {
+			onSearchRequested();
+		} else {
+			Intent i = new Intent(this, TrackListActivity.class);
+			i.putExtra(Constants.EXTRA_ARTIST_NAME, s.getName());
+			i.putExtra(Constants.EXTRA_ARTIST_IMG, s.getImg());
+			i.putExtra(Constants.EXTRA_ARTIST_URL, s.getUrl());
+			startActivityWithoutAnimation(i);
+		}
 	}
 
 	private void addArtists() {

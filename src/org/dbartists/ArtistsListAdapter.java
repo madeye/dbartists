@@ -130,9 +130,7 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 
 	private void getMoreArtists(String url, int startId) {
 		moreArtists = ArtistFactory.downloadArtists(url, startId);
-		if (moreArtists != null) {
-			ArtistsListActivity.addAllToArtistCache(moreArtists);
-		} else {
+		if (moreArtists == null || moreArtists.size() < 20) {
 			endReached = true;
 		}
 	}

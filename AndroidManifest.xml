@@ -27,7 +27,7 @@
 		<activity android:name="com.google.ads.AdActivity"
 			android:configChanges="keyboard|keyboardHidden|orientation" />
 		<activity android:name=".SearchArtistsListActivity"
-			android:label="Search">
+			android:label="Search" android:launchMode="singleTask">
 			<intent-filter>
 				<action android:name="android.intent.action.SEARCH" />
 				<category android:name="android.intent.category.DEFAULT" />

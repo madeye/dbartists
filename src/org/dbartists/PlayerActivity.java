@@ -46,7 +46,7 @@ import com.google.ads.AdView;
  *         layout, including the ListenView.
  */
 public abstract class PlayerActivity extends ActivityGroup implements Refreshable {
-	private TextView titleText;
+	protected TextView titleText;
 
 	public abstract CharSequence getMainTitle();
 

@@ -119,8 +119,5 @@ public class TopArtistsListAdapter extends ArrayAdapter<Artist> {
 
 	private void getMoreArtists(String url, int startId) {
 		moreArtists = ArtistFactory.downloadArtists(url, startId);
-		if (moreArtists != null) {
-			ArtistsListActivity.addAllToArtistCache(moreArtists);
-		}
 	}
 }

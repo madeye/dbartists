@@ -40,28 +40,6 @@ public class TopArtistsListActivity extends PlayerActivity implements
 
 	protected TopArtistsListAdapter listAdapter;
 
-	private static Map<String, Artist> artistsCache = new HashMap<String, Artist>();
-
-	public static Artist getArtistFromCache(String artistId) {
-		Artist result = artistsCache.get(artistId);
-		if (result == null) {
-
-		}
-		return result;
-	}
-
-	public static void addAllToArtistCache(List<Artist> artists) {
-		for (Artist artist : artists) {
-			artistsCache.put(artist.getName(), artist);
-		}
-	}
-
-	@Override
-	public void onLowMemory() {
-		super.onLowMemory();
-		artistsCache.clear();
-	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
