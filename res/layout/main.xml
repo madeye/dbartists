@@ -8,7 +8,7 @@
 		<include layout="@layout/logo" />
 		<LinearLayout android:layout_height="wrap_content"
 			android:layout_width="fill_parent" android:background="@drawable/title">
-			<TextView android:id="@+id/LogoNavText"
+			<TextView android:id="@+id/LogoNavText" android:maxWidth="300px"
 				android:layout_height="fill_parent" android:layout_width="wrap_content"
 				android:text="Dummy Text" android:gravity="center_vertical"
 				android:layout_marginLeft="10dip" android:textAppearance="?android:attr/textAppearanceLarge"
@@ -16,10 +16,10 @@
 			</TextView>
 			<ProgressBar android:id="@+id/leadProgressBar"
 				style="?android:attr/progressBarStyleSmall" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:layout_margin="6px"
+				android:layout_height="wrap_content" android:indeterminateDuration="5000"
+				android:layout_marginLeft="10dip" android:layout_marginTop="6dip"
 				android:padding="2dip" android:gravity="center_vertical"
-				android:indeterminate="true"
-				android:visibility="visible"></ProgressBar>
+				android:indeterminate="true"></ProgressBar>
 		</LinearLayout>
 	</LinearLayout>
 	<FrameLayout android:id="@+id/Content"
