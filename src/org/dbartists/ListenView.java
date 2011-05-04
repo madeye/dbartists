@@ -187,7 +187,7 @@ public class ListenView extends FrameLayout implements OnClickListener,
 			try {
 				addPlaylistItem(entry);
 				player.setCurrent(entry);
-				player.listen(entry.title, entry.url, entry.isStream);
+				player.listen(entry.url, entry.isStream);
 			} catch (IllegalArgumentException e) {
 				Log.e(LOG_TAG, "", e);
 			} catch (IllegalStateException e) {
@@ -267,7 +267,7 @@ public class ListenView extends FrameLayout implements OnClickListener,
 			if (player != null) {
 				try {
 					player.setCurrent(entry);
-					player.listen(entry.title, entry.url, entry.isStream);
+					player.listen(entry.url, entry.isStream);
 				} catch (IllegalArgumentException e) {
 					Log.e(LOG_TAG, "", e);
 				} catch (IllegalStateException e) {

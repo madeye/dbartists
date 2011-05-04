@@ -33,7 +33,9 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -47,6 +49,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
+import org.dbartists.api.Artist;
 import org.dbartists.utils.M3uParser;
 import org.dbartists.utils.PlaylistEntry;
 import org.dbartists.utils.PlaylistParser;
@@ -265,7 +268,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	/**
 	 * Start listening to the given URL.
 	 */
-	public void listen(String title, String url, boolean stream)
+	public void listen(final String url, boolean stream)
 			throws IllegalArgumentException, IllegalStateException, IOException {
 		// First, clean up any existing audio.
 		if (isPlaying()) {
@@ -273,7 +276,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		}
 
 		Log.d(LOG_TAG, "listening to " + url + " stream=" + stream);
-		String playUrl = url;
 		// // From 2.2 on (SDK ver 8), the local mediaplayer can handle
 		// Shoutcast
 		// // streams natively. Let's detect that, and not proxy.
@@ -284,54 +286,79 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		// } catch (NumberFormatException e) {
 		// }
 
-		int file_size;
-		try {
-			URL remote = new URL(url);
-			URLConnection urlConnection = remote.openConnection();
-			urlConnection.connect();
-			file_size = urlConnection.getContentLength();
-		} catch (IOException e) {
-			file_size = -1;
-		}
-
-		File f = new File(StreamProxy.getFileName(title));
-
-		Log.d(LOG_TAG, "title: " + title + " remote size: " + file_size);
-
-		if (f.exists() && Math.abs(f.length() - file_size) < 100 * 1024) {
-			playUrl = f.getAbsolutePath();
-			stream = false;
-		} else {
-			if (proxy == null) {
-				proxy = new StreamProxy();
-				proxy.init();
-				proxy.start();
+		new Thread() {
+			public void run() {
+				int file_size;
+				try {
+					URL remote = new URL(url);
+					URLConnection urlConnection = remote.openConnection();
+					urlConnection.connect();
+					file_size = urlConnection.getContentLength();
+				} catch (IOException e) {
+					file_size = -1;
+				}
+				Message msg = new Message();
+				msg.arg1 = file_size;
+				handler.sendMessage(msg);
 			}
-
-			proxy.setTitle(title);
-			String proxyUrl = String.format("http://127.0.0.1:%d/%s",
-					proxy.getPort(), url);
-			playUrl = proxyUrl;
-			stream = true;
-		}
-
-		synchronized (this) {
-			Log.d(LOG_TAG, "reset: " + playUrl);
-			mediaPlayer.reset();
-			mediaPlayer.setDataSource(playUrl);
-			mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			Log.d(LOG_TAG, "Preparing: " + playUrl);
-		}
-		
-		if (stream)
-			mediaPlayer.prepareAsync();
-		else
-			mediaPlayer.prepare();
-		Log.d(LOG_TAG, "Waiting for prepare");
-		
-		
+		}.start();
 
 	}
+
+	private Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+
+			String title = current.title;
+			int file_size = msg.arg1;
+			boolean stream = current.isStream;
+			String url = current.url;
+
+			File f = new File(StreamProxy.getFileName(title));
+
+			Log.d(LOG_TAG, "title: " + title + " remote size: " + file_size);
+
+			if (f.exists() && Math.abs(f.length() - file_size) < 100 * 1024) {
+				url = f.getAbsolutePath();
+				stream = false;
+			} else {
+				if (proxy == null) {
+					proxy = new StreamProxy();
+					proxy.init();
+					proxy.start();
+				}
+
+				proxy.setTitle(title);
+				String proxyUrl = String.format("http://127.0.0.1:%d/%s",
+						proxy.getPort(), url);
+				url = proxyUrl;
+				stream = true;
+			}
+
+			synchronized (this) {
+				try {
+					Log.d(LOG_TAG, "reset: " + url);
+					mediaPlayer.reset();
+
+					mediaPlayer.setDataSource(url);
+					mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+					Log.d(LOG_TAG, "Preparing: " + url);
+
+					if (stream)
+						mediaPlayer.prepareAsync();
+					else
+						mediaPlayer.prepare();
+					Log.d(LOG_TAG, "Waiting for prepare");
+				} catch (IllegalArgumentException e) {
+					Log.e(LOG_TAG, "", e);
+				} catch (IllegalStateException e) {
+					Log.e(LOG_TAG, "", e);
+				} catch (IOException e) {
+					Log.e(LOG_TAG, "", e);
+				}
+			}
+		}
+	};
 
 	@Override
 	public void onPrepared(MediaPlayer mp) {
@@ -490,7 +517,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 						Log.d(LOG_TAG, "no url");
 						// Do nothing.
 					} else {
-						listen(current.title, url, current.isStream);
+						listen(url, current.isStream);
 					}
 				} catch (IllegalArgumentException e) {
 					Log.e(LOG_TAG, "", e);
