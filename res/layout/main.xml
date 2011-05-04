@@ -5,22 +5,24 @@
 	<LinearLayout android:layout_height="wrap_content"
 		android:layout_width="fill_parent" android:id="@+id/Logo"
 		android:orientation="vertical">
-		<include layout="@layout/logo" />
-		<LinearLayout android:layout_height="wrap_content"
-			android:layout_width="fill_parent" android:background="@drawable/title">
+		<include layout="@layout/logo" android:layout_weight="1" />
+		<RelativeLayout android:layout_width="fill_parent"
+			android:background="@drawable/title" android:layout_height="wrap_content"
+			android:layout_weight="1">
 			<TextView android:id="@+id/LogoNavText" android:maxWidth="300px"
-				android:layout_height="fill_parent" android:layout_width="wrap_content"
+				android:layout_height="45sp" android:layout_width="wrap_content"
 				android:text="Dummy Text" android:gravity="center_vertical"
+				android:layout_alignParentLeft="true" android:layout_marginTop="6dip"
 				android:layout_marginLeft="10dip" android:textAppearance="?android:attr/textAppearanceLarge"
-				android:textColor="#fff" android:singleLine="true" android:padding="2dip">
+				android:textColor="#369" android:singleLine="true" android:padding="2dip">
 			</TextView>
 			<ProgressBar android:id="@+id/leadProgressBar"
-				style="?android:attr/progressBarStyleSmall" android:layout_width="wrap_content"
+				android:layout_width="wrap_content" style="@android:style/Widget.ProgressBar.Small"
 				android:layout_height="wrap_content" android:indeterminateDuration="5000"
-				android:layout_marginLeft="10dip" android:layout_marginTop="6dip"
-				android:padding="2dip" android:gravity="center_vertical"
+				android:layout_marginRight="10dip" android:layout_marginTop="17dip"
+				android:padding="2dip" android:layout_alignParentRight="true"
 				android:indeterminate="true"></ProgressBar>
-		</LinearLayout>
+		</RelativeLayout>
 	</LinearLayout>
 	<FrameLayout android:id="@+id/Content"
 		android:layout_width="fill_parent" android:layout_height="fill_parent"
