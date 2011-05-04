@@ -54,7 +54,7 @@ public class ArtistFactory {
 				line = reader.readLine();
 				String site = line.trim();
 
-				Artist art = new Artist(startId + n, name, img, site);
+				Artist art = new Artist(name, img, site);
 				list.add(art);
 				n++;
 			}

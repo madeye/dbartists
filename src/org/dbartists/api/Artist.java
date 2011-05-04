@@ -1,11 +1,15 @@
 package org.dbartists.api;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+
+import org.dbartists.StreamProxy;
 
 public class Artist {
 	
 	// artist id
-	private int id;
+	private String id;
 	
 	// artist name
 	private String name;
@@ -16,8 +20,14 @@ public class Artist {
 	// artist image
 	private String img;
 	
-	public Artist(int id, String name, String img, String url) {
-		this.id = id;
+	public Artist(String name, String img, String url) {
+		try {
+			this.id = StreamProxy.MD5(url);
+		} catch (NoSuchAlgorithmException e) {
+			this.id = "tmp";
+		} catch (UnsupportedEncodingException e) {
+			this.id = "tmp";
+		}
 		this.name = name;
 		this.img = img;
 		this.url = url;
@@ -47,11 +57,11 @@ public class Artist {
 		this.img = img;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	

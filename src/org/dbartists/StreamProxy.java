@@ -69,12 +69,13 @@ public class StreamProxy implements Runnable {
 	private static final String CACHE_BASE = "/sdcard/dbartists/";
 
 	private int port = 0;
+	private String title = "tmp";
 
 	public int getPort() {
 		return port;
 	}
 
-	private boolean isRunning = true;
+	private volatile boolean isRunning = true;
 	private ServerSocket socket;
 	private Thread thread;
 
@@ -115,8 +116,22 @@ public class StreamProxy implements Runnable {
 		try {
 			thread.join(5000);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			Log.e(LOG_TAG, "join error");
 		}
+		
+		try {
+			socket.close();
+		} catch (IOException e) {
+			// Nothing
+		}
+	}
+	
+	public boolean getIsRunning() {
+		return isRunning;
+	}
+	
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	@Override
@@ -199,7 +214,7 @@ public class StreamProxy implements Runnable {
 		Log.d(LOG_TAG, "processing");
 		String url = request.getRequestLine().getUri();
 
-		String cache = getFileName(url);
+		String cache = getFileName(title);
 		File f = new File(cache);
 		if (!f.exists())
 			f.createNewFile();
@@ -237,11 +252,13 @@ public class StreamProxy implements Runnable {
 			client.getOutputStream().write(buffer, 0, buffer.length);
 
 			// Start streaming content.
-			byte[] buff = new byte[1024 * 50];
+			byte[] buff = new byte[1024 * 100];
 			while (isRunning
 					&& (readBytes = data.read(buff, 0, buff.length)) != -1) {
 				client.getOutputStream().write(buff, 0, readBytes);
 				output.write(buff, 0, readBytes);
+				client.getOutputStream().flush();
+				output.flush();
 			}
 		} catch (Exception e) {
 			Log.e("", e.getMessage(), e);
@@ -250,17 +267,16 @@ public class StreamProxy implements Runnable {
 				data.close();
 			}
 			if (output != null) {
-				output.flush();
 				output.close();
 			}
 			client.close();
 		}
 	}
 
-	public static String getFileName(String url) {
+	public static String getFileName(String name) {
 		String file;
 		try {
-			file = MD5(url);
+			file = MD5(name);
 		} catch (NoSuchAlgorithmException e) {
 			file = null;
 		} catch (UnsupportedEncodingException e) {

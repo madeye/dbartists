@@ -78,7 +78,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private static final int NOTIFICATION_ID = 1;
 	private int bindCount = 0;
 	private PlaylistEntry current = null;
-	private List<String> playlistUrls;
 
 	private TelephonyManager telephonyManager;
 	private PhoneStateListener listener;
@@ -212,12 +211,14 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		Context c = getApplicationContext();
 		CharSequence title = getString(R.string.app_name);
 		Intent notificationIntent;
-		if (current.storyID != null) {
-			notificationIntent = new Intent(this, ArtistsListActivity.class);
-			notificationIntent.putExtra(Constants.EXTRA_STORY_ID,
-					current.storyID);
-			notificationIntent.putExtra(Constants.EXTRA_DESCRIPTION,
-					R.string.msg_main_subactivity_nowplaying);
+		if (current.artist != null) {
+			notificationIntent = new Intent(this, TrackListActivity.class);
+			notificationIntent.putExtra(Constants.EXTRA_ARTIST_NAME,
+					current.artist.getName());
+			notificationIntent.putExtra(Constants.EXTRA_ARTIST_URL,
+					current.artist.getUrl());
+			notificationIntent.putExtra(Constants.EXTRA_ARTIST_IMG,
+					current.artist.getImg());
 		} else {
 			notificationIntent = new Intent(this, Main.class);
 		}
@@ -264,7 +265,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	/**
 	 * Start listening to the given URL.
 	 */
-	public void listen(String url, boolean stream)
+	public void listen(String title, String url, boolean stream)
 			throws IllegalArgumentException, IllegalStateException, IOException {
 		// First, clean up any existing audio.
 		if (isPlaying()) {
@@ -283,24 +284,35 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		// } catch (NumberFormatException e) {
 		// }
 
-		URL remote = new URL(url);
-		URLConnection urlConnection = remote.openConnection();
-		urlConnection.connect();
-		int file_size = urlConnection.getContentLength();
+		int file_size;
+		try {
+			URL remote = new URL(url);
+			URLConnection urlConnection = remote.openConnection();
+			urlConnection.connect();
+			file_size = urlConnection.getContentLength();
+		} catch (IOException e) {
+			file_size = -1;
+		}
 
-		File f = new File(StreamProxy.getFileName(url));
+		File f = new File(StreamProxy.getFileName(title));
 
-		if (f.exists() && f.length() == file_size) {
+		Log.d(LOG_TAG, "title: " + title + " remote size: " + file_size);
+
+		if (f.exists() && Math.abs(f.length() - file_size) < 100 * 1024) {
 			playUrl = f.getAbsolutePath();
+			stream = false;
 		} else {
 			if (proxy == null) {
 				proxy = new StreamProxy();
 				proxy.init();
 				proxy.start();
 			}
+
+			proxy.setTitle(title);
 			String proxyUrl = String.format("http://127.0.0.1:%d/%s",
 					proxy.getPort(), url);
 			playUrl = proxyUrl;
+			stream = true;
 		}
 
 		synchronized (this) {
@@ -309,9 +321,16 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			mediaPlayer.setDataSource(playUrl);
 			mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			Log.d(LOG_TAG, "Preparing: " + playUrl);
-			mediaPlayer.prepareAsync();
-			Log.d(LOG_TAG, "Waiting for prepare");
 		}
+		
+		if (stream)
+			mediaPlayer.prepareAsync();
+		else
+			mediaPlayer.prepare();
+		Log.d(LOG_TAG, "Waiting for prepare");
+		
+		
+
 	}
 
 	@Override
@@ -393,7 +412,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	/**
 	 * Sends an UPDATE broadcast with the latest info.
 	 */
-	private void updateProgress() {
+	private synchronized void updateProgress() {
 		if (isPrepared && mediaPlayer != null && mediaPlayer.isPlaying()) {
 			// Update broadcasts are sticky, so when a new receiver connects, it
 			// will
@@ -434,21 +453,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			onCompletionListener.onCompletion(mp);
 		}
 
-		if (playlistUrls != null && playlistUrls.size() > 0) {
-			// Unfinished playlist
-			String url = playlistUrls.remove(0);
-			try {
-				listen(url, current.isStream);
-			} catch (IllegalArgumentException e) {
-				Log.e(LOG_TAG, "", e);
-			} catch (IllegalStateException e) {
-				Log.e(LOG_TAG, "", e);
-			} catch (IOException e) {
-				Log.e(LOG_TAG, "", e);
-			}
-			return;
-		}
-
 		playNext();
 		if (bindCount == 0 && !isPlaying()) {
 			stopSelf();
@@ -486,7 +490,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 						Log.d(LOG_TAG, "no url");
 						// Do nothing.
 					} else {
-						listen(url, current.isStream);
+						listen(current.title, url, current.isStream);
 					}
 				} catch (IllegalArgumentException e) {
 					Log.e(LOG_TAG, "", e);
@@ -515,40 +519,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		getApplicationContext().sendBroadcast(new Intent(SERVICE_CLOSE_NAME));
 	}
 
-	private void downloadPlaylist() throws MalformedURLException, IOException {
-		String url = current.url;
-		Log.d(LOG_TAG, "downloading " + url);
-		URLConnection cn = new URL(url).openConnection();
-		cn.connect();
-		InputStream stream = cn.getInputStream();
-		if (stream == null) {
-			Log.e(LOG_TAG, "Unable to create InputStream for url: + url");
-		}
-
-		File downloadingMediaFile = new File(getCacheDir(), "playlist_data");
-		FileOutputStream out = new FileOutputStream(downloadingMediaFile);
-		byte buf[] = new byte[16384];
-		int totalBytesRead = 0, incrementalBytesRead = 0;
-		int numread;
-		while ((numread = stream.read(buf)) > 0) {
-			out.write(buf, 0, numread);
-			totalBytesRead += numread;
-			incrementalBytesRead += numread;
-		}
-
-		stream.close();
-		out.close();
-		PlaylistParser parser;
-		if (url.indexOf("m3u") > -1) {
-			parser = new M3uParser(downloadingMediaFile);
-		} else if (url.indexOf("pls") > -1) {
-			parser = new PlsParser(downloadingMediaFile);
-		} else {
-			return;
-		}
-		playlistUrls = parser.getUrls();
-	}
-
 	private PlaylistEntry retrievePlaylistItem(int current, boolean next) {
 		String selection = PlaylistProvider.Items.IS_READ + " = ?";
 		String[] selectionArgs = new String[1];
@@ -571,7 +541,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	}
 
 	private PlaylistEntry getFromCursor(Cursor c) {
-		String title = null, url = null, storyID = null;
+		String title = null, url = null;
 		long id;
 		int order;
 		if (c.moveToFirst()) {
@@ -580,10 +550,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			url = c.getString(c.getColumnIndex(PlaylistProvider.Items.URL));
 			order = c.getInt(c
 					.getColumnIndex(PlaylistProvider.Items.PLAY_ORDER));
-			storyID = c.getString(c
-					.getColumnIndex(PlaylistProvider.Items.STORY_ID));
 			c.close();
-			return new PlaylistEntry(id, url, title, false, order, storyID);
+			return new PlaylistEntry(id, url, title, false, order);
 		}
 		c.close();
 		return null;

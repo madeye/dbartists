@@ -187,7 +187,7 @@ public class ListenView extends FrameLayout implements OnClickListener,
 			try {
 				addPlaylistItem(entry);
 				player.setCurrent(entry);
-				player.listen(entry.url, entry.isStream);
+				player.listen(entry.title, entry.url, entry.isStream);
 			} catch (IllegalArgumentException e) {
 				Log.e(LOG_TAG, "", e);
 			} catch (IllegalStateException e) {
@@ -210,7 +210,7 @@ public class ListenView extends FrameLayout implements OnClickListener,
 		values.put(Items.IS_READ, false);
 		values.put(Items.PLAY_ORDER,
 				PlaylistProvider.getMax(this.getContext()) + 1);
-		values.put(Items.STORY_ID, entry.storyID);
+		values.put(Items.STORY_ID, entry.artist.getId());
 		Log.d(LOG_TAG, "Adding playlist item to db");
 		Uri insert = this.getContext().getContentResolver()
 				.insert(PlaylistProvider.CONTENT_URI, values);
@@ -263,11 +263,11 @@ public class ListenView extends FrameLayout implements OnClickListener,
 		public void onReceive(Context context, Intent intent) {
 			String name = intent.getStringExtra(Constants.EXTRA_TRACK_NAME);
 			String url = intent.getStringExtra(Constants.EXTRA_TRACK_URL);
-			PlaylistEntry entry = new PlaylistEntry(-1, url, name, true, -1, url);
+			PlaylistEntry entry = new PlaylistEntry(-1, url, name, true, -1);
 			if (player != null) {
 				try {
 					player.setCurrent(entry);
-					player.listen(entry.url, entry.isStream);
+					player.listen(entry.title, entry.url, entry.isStream);
 				} catch (IllegalArgumentException e) {
 					Log.e(LOG_TAG, "", e);
 				} catch (IllegalStateException e) {

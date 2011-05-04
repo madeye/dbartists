@@ -14,13 +14,15 @@
 
 package org.dbartists.utils;
 
+import org.dbartists.api.Artist;
+
 public class PlaylistEntry {
   public long id;
   public final String url;
   public final String title;
   public final boolean isStream;
   public int order;
-  public final String storyID;
+  public final Artist artist;
 
   public PlaylistEntry(long id, String url, String title, boolean isStream,
       int order) {
@@ -28,13 +30,13 @@ public class PlaylistEntry {
   }
 
   public PlaylistEntry(long id, String url, String title, boolean isStream,
-      int order, String storyID) {
+      int order, Artist artist) {
     this.id = id;
     this.url = url;
     this.title = title;
     this.isStream = isStream;
     this.order = order;
-    this.storyID = storyID;
+    this .artist = artist;
   }
 }
 

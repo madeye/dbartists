@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.dbartists.api.Artist;
 import org.dbartists.api.Track;
 import org.dbartists.utils.PlaylistEntry;
 
@@ -104,7 +105,7 @@ public class TrackListActivity extends PlayerActivity implements
 	private void playTrack(Track track, boolean playNow) {
 		Log.d(TAG, "play now: " + track.getUrl());
 		PlaylistEntry entry = new PlaylistEntry(-1, track.getUrl(), track.getName(), true,
-				-1, track.getUrl());
+				-1, new Artist(artistName, artistImg, artistUrl));
 		if (playNow) {
 			this.listen(entry);
 		}
@@ -116,7 +117,7 @@ public class TrackListActivity extends PlayerActivity implements
 			if (t == null)
 				break;
 			PlaylistEntry e = new PlaylistEntry(-1, t.getUrl(), t.getName(), true,
-					-1, t.getUrl());
+					-1, new Artist(artistName, artistImg, artistUrl));
 			entries.add(e);
 		}
 		

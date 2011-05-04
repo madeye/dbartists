@@ -61,6 +61,8 @@ public abstract class PlayerActivity extends ActivityGroup implements
 
 	private static final String LOG_TAG = PlayerActivity.class.getName();
 	private ListenView listenView;
+	private static boolean ignoreWifi = false;
+	private static boolean closeAd = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,10 +80,8 @@ public abstract class PlayerActivity extends ActivityGroup implements
 		titleText = (TextView) findViewById(R.id.LogoNavText);
 		titleText.setText(getMainTitle());
 
-		SharedPreferences settings = PreferenceManager
-				.getDefaultSharedPreferences(this);
 
-		if (!settings.getBoolean("close_ad", false)) {
+		if (!closeAd) {
 			// Create the adView
 			AdView adView = new AdView(this, AdSize.BANNER, "a14dbe96b16a891");
 			// Lookup your LinearLayout assuming it¡¯s been given
@@ -98,7 +98,7 @@ public abstract class PlayerActivity extends ActivityGroup implements
 		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 		if (networkInfo != null && !networkInfo.getTypeName().equals("WIFI")) {
-			if (!settings.getBoolean("ignore_wifi", false)) {
+			if (!ignoreWifi) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setMessage(R.string.msg_alert_wifi)
 						.setCancelable(false)
@@ -107,11 +107,7 @@ public abstract class PlayerActivity extends ActivityGroup implements
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int id) {
-										SharedPreferences settings = PreferenceManager
-												.getDefaultSharedPreferences(PlayerActivity.this);
-										Editor ed = settings.edit();
-										ed.putBoolean("ignore_wifi", true);
-										ed.commit();
+										ignoreWifi = true;
 										dialog.cancel();
 									}
 								})
@@ -212,14 +208,10 @@ public abstract class PlayerActivity extends ActivityGroup implements
 	}
 
 	private void closeAd() {
-		SharedPreferences settings = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		Editor ed = settings.edit();
-		if (settings.getBoolean("close_ad", false))
-			ed.putBoolean("close_ad", false);
+		if (closeAd)
+			closeAd = false;
 		else
-			ed.putBoolean("close_ad", true);
-		ed.commit();
+			closeAd = true;
 		LinearLayout layout = (LinearLayout) findViewById(R.id.ad);
 		layout.setVisibility(LinearLayout.GONE);
 	}
