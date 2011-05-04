@@ -15,6 +15,7 @@
 package org.dbartists;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,7 @@ import java.util.Map;
 import org.dbartists.api.Artist;
 import org.dbartists.api.Track;
 import org.dbartists.utils.PlaylistEntry;
+import org.dbartists.utils.PlaylistProvider;
 
 public class TrackListActivity extends PlayerActivity implements
 		OnItemClickListener {
@@ -104,26 +106,50 @@ public class TrackListActivity extends PlayerActivity implements
 
 	private void playTrack(Track track, boolean playNow) {
 		Log.d(TAG, "play now: " + track.getUrl());
-		PlaylistEntry entry = new PlaylistEntry(-1, track.getUrl(), track.getName(), true,
-				-1, new Artist(artistName, artistImg, artistUrl));
+		PlaylistEntry entry = new PlaylistEntry(-1, track.getUrl(),
+				track.getName(), true, -1, new Artist(artistName, artistImg,
+						artistUrl));
 		if (playNow) {
 			this.listen(entry);
 		}
 
-		int i = track.getId() + 1;
 		List<PlaylistEntry> entries = new ArrayList<PlaylistEntry>();
-		while (true) {
-			Track t = trackCache.get(i++);
-			if (t == null)
-				break;
-			PlaylistEntry e = new PlaylistEntry(-1, t.getUrl(), t.getName(), true,
-					-1, new Artist(artistName, artistImg, artistUrl));
-			entries.add(e);
+		for (Track t : trackCache.values()) {
+			if (t == track)
+				continue;
+			if (!existInPlaylist(t.getName(), true)) {
+				PlaylistEntry e = new PlaylistEntry(-1, t.getUrl(),
+						t.getName(), true, -1, new Artist(artistName, artistImg,
+								artistUrl));
+				entries.add(e);
+			}
 		}
-		
+
 		if (entries.size() > 0)
 			this.addToPlayList(entries);
-		
+
+	}
+
+	private boolean existInPlaylist(String name, boolean next) {
+		String selection = PlaylistProvider.Items.IS_READ + " = ?" + " and "
+				+ PlaylistProvider.Items.NAME + " = ?";
+		String[] selectionArgs = new String[2];
+		selectionArgs[0] = "0";
+		selectionArgs[1] = name;
+		String sort = PlaylistProvider.Items.PLAY_ORDER
+				+ (next ? " asc" : " desc");
+		return retrievePlaylistItem(selection, selectionArgs, sort);
+	}
+
+	private boolean retrievePlaylistItem(String selection,
+			String[] selectionArgs, String sort) {
+		Cursor cursor = getContentResolver().query(
+				PlaylistProvider.CONTENT_URI, null, selection, selectionArgs,
+				sort);
+		if (cursor.moveToFirst())
+			return true;
+		else
+			return false;
 	}
 
 	@Override
