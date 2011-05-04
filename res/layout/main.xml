@@ -14,7 +14,7 @@
 				android:text="Dummy Text" android:gravity="center_vertical"
 				android:layout_alignParentLeft="true" android:layout_marginTop="6dip"
 				android:layout_marginLeft="10dip" android:textAppearance="?android:attr/textAppearanceLarge"
-				android:textColor="#666" android:singleLine="true" android:padding="2dip">
+				android:textColor="#FFF" android:singleLine="true" android:padding="2dip">
 			</TextView>
 			<ProgressBar android:id="@+id/leadProgressBar"
 				android:layout_width="wrap_content" style="@android:style/Widget.ProgressBar.Small"
