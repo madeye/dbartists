@@ -17,10 +17,11 @@
 				android:textColor="#FFF" android:singleLine="true" android:padding="2dip">
 			</TextView>
 			<ProgressBar android:id="@+id/leadProgressBar"
-				android:layout_width="wrap_content" style="@android:style/Widget.ProgressBar.Small"
-				android:layout_height="wrap_content" android:indeterminateDuration="5000"
-				android:layout_marginRight="10dip" android:layout_marginTop="17dip"
-				android:padding="2dip" android:layout_alignParentRight="true"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:indeterminateDuration="5000" android:layout_marginRight="10dip"
+				android:layout_marginTop="17dip" android:padding="2dip"
+				style="?android:attr/progressBarStyleSmall" 
+				android:layout_alignParentRight="true" android:progressDrawable="@drawable/loader"
 				android:indeterminate="true"></ProgressBar>
 		</RelativeLayout>
 	</LinearLayout>
