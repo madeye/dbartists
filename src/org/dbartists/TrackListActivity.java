@@ -127,15 +127,15 @@ public class TrackListActivity extends PlayerActivity implements
 
 		if (entries.size() > 0)
 			this.addToPlayList(entries);
+		
+		listAdapter.refresh();
 
 	}
 
 	private boolean existInPlaylist(String name, boolean next) {
-		String selection = PlaylistProvider.Items.IS_READ + " = ?" + " and "
-				+ PlaylistProvider.Items.NAME + " = ?";
-		String[] selectionArgs = new String[2];
-		selectionArgs[0] = "0";
-		selectionArgs[1] = name;
+		String selection = PlaylistProvider.Items.NAME + " = ?";
+		String[] selectionArgs = new String[1];
+		selectionArgs[0] = name;
 		String sort = PlaylistProvider.Items.PLAY_ORDER
 				+ (next ? " asc" : " desc");
 		return retrievePlaylistItem(selection, selectionArgs, sort);

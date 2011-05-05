@@ -203,7 +203,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		}
 		Log.d(LOG_TAG, "play " + current.id);
 		mediaPlayer.start();
-		markAsRead(current.id);
 
 		int icon = R.drawable.stat_notify_musicplayer;
 		CharSequence contentText = current.title;
@@ -285,6 +284,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		// sdkVersion = Integer.parseInt(Build.VERSION.SDK);
 		// } catch (NumberFormatException e) {
 		// }
+
+		markAsPlaying(current.id);
 
 		new Thread() {
 			public void run() {
@@ -547,12 +548,9 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	}
 
 	private PlaylistEntry retrievePlaylistItem(int current, boolean next) {
-		String selection = PlaylistProvider.Items.IS_READ + " = ?";
-		String[] selectionArgs = new String[1];
-		selectionArgs[0] = "0";
 		String sort = PlaylistProvider.Items.PLAY_ORDER
 				+ (next ? " asc" : " desc");
-		return retrievePlaylistItem(selection, selectionArgs, sort);
+		return retrievePlaylistItem(null, null, sort);
 	}
 
 	private PlaylistEntry getNextPlaylistItem(int current) {
@@ -571,6 +569,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		String title = null, url = null;
 		long id;
 		int order;
+		while (c.moveToNext()) {
+			if (c.getInt(c.getColumnIndex(PlaylistProvider.Items._ID)) == (int) current.id)
+				break;
+		}
 		if (c.moveToFirst()) {
 			id = c.getInt(c.getColumnIndex(PlaylistProvider.Items._ID));
 			title = c.getString(c.getColumnIndex(PlaylistProvider.Items.NAME));
@@ -584,13 +586,20 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		return null;
 	}
 
-	private void markAsRead(long id) {
+	private void markAsPlaying(long id) {
+		
+		Log.d(LOG_TAG, "mark as playing: " + id);
+		
+		ContentValues values = new ContentValues();
+		values.put(Items.IS_PLAYING, false);
+		getContentResolver().update(PlaylistProvider.CONTENT_URI, values, null,
+				null);
+
 		Uri update = ContentUris.withAppendedId(PlaylistProvider.CONTENT_URI,
 				id);
-		ContentValues values = new ContentValues();
-		values.put(Items.IS_READ, true);
-		@SuppressWarnings("unused")
-		int result = getContentResolver().update(update, values, null, null);
+		values = new ContentValues();
+		values.put(Items.IS_PLAYING, true);
+		getContentResolver().update(update, values, null, null);
 	}
 
 	// -----------

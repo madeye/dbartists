@@ -22,6 +22,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -64,6 +66,17 @@ public abstract class PlayerActivity extends ActivityGroup implements
 	private static boolean ignoreWifi = false;
 	private static boolean closeAd = false;
 
+	private int getVersionCode() {
+		int version = -1;
+		try {
+			PackageInfo pi = getPackageManager().getPackageInfo(
+					getPackageName(), 0);
+			version = pi.versionCode;
+		} catch (PackageManager.NameNotFoundException e) {
+		}
+		return version;
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -79,7 +92,6 @@ public abstract class PlayerActivity extends ActivityGroup implements
 		setContentView(R.layout.main);
 		titleText = (TextView) findViewById(R.id.LogoNavText);
 		titleText.setText(getMainTitle());
-
 
 		if (!closeAd) {
 			// Create the adView

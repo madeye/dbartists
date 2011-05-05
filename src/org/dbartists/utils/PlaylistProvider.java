@@ -33,7 +33,7 @@ public class PlaylistProvider extends ContentProvider {
   public static final Uri CONTENT_URI = Uri
       .parse("content://org.dbartists.utils.Playlist");
   private static final String DATABASE_NAME = "playlist.db";
-  protected static final int DATABASE_VERSION = 2;
+  protected static final int DATABASE_VERSION = 3;
   protected static final String TABLE_NAME = "items";
   private static final String LOG_TAG = PlaylistProvider.class.getName();
   private PlaylistHelper helper;
@@ -137,16 +137,21 @@ public class PlaylistProvider extends ContentProvider {
     public static final String NAME = "name";
     public static final String URL = "url";
     public static final String PLAY_ORDER = "play_order";
-    public static final String IS_READ = "is_read";
+    public static final String IS_PLAYING = "is_playing";
     public static final String STORY_ID = "story_id";
-    public static final String[] COLUMNS = { NAME, URL, PLAY_ORDER, IS_READ,
+    public static final String[] COLUMNS = { NAME, URL, PLAY_ORDER, IS_PLAYING,
         STORY_ID };
     public static final String[] ALL_COLUMNS = { BaseColumns._ID, NAME, URL,
-        PLAY_ORDER, IS_READ, STORY_ID };
+        PLAY_ORDER, IS_PLAYING, STORY_ID };
 
     // This class cannot be instantiated
     private Items() {
     }
+  }
+  
+  public void reInstallDatabase () {
+	  SQLiteDatabase db = helper.getWritableDatabase();
+	  helper.dropTable(db);	  
   }
 
   protected static class PlaylistHelper extends SQLiteOpenHelper {
@@ -159,7 +164,7 @@ public class PlaylistProvider extends ContentProvider {
     public void onCreate(SQLiteDatabase db) {
       db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + Items._ID
           + " INTEGER PRIMARY KEY," + Items.NAME + " TEXT," + Items.URL
-          + " VARCHAR," + Items.IS_READ + " BOOLEAN," + Items.PLAY_ORDER
+          + " VARCHAR," + Items.IS_PLAYING + " BOOLEAN," + Items.PLAY_ORDER
           + " INTEGER," + Items.STORY_ID + " TEXT" + ");");
     }
 
@@ -172,12 +177,15 @@ public class PlaylistProvider extends ContentProvider {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
       Log.w(PlaylistHelper.class.getName(), "Upgrading database from version "
           + oldVersion + " to " + newVersion);
-      if (newVersion <= 3) {
+      if (oldVersion < 3) {
         try {
           // TODO: This is kind of a hack, and it would be better to check for
           // the existence of the column first.
-          db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN "
-              + Items.STORY_ID + " TEXT DEFAULT NULL;");
+        	db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+            db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + Items._ID
+                    + " INTEGER PRIMARY KEY," + Items.NAME + " TEXT," + Items.URL
+                    + " VARCHAR," + Items.IS_PLAYING + " BOOLEAN," + Items.PLAY_ORDER
+                    + " INTEGER," + Items.STORY_ID + " TEXT" + ");");
         } catch (SQLException error) {
           Log.e(LOG_TAG, error.toString());
         }

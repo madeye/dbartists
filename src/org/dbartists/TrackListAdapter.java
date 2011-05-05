@@ -14,8 +14,12 @@
 
 package org.dbartists;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -31,6 +35,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.dbartists.api.ArtistFactory;
 import org.dbartists.api.Track;
 import org.dbartists.api.TrackFactory;
+import org.dbartists.utils.PlaylistProvider;
+import org.dbartists.utils.PlaylistProvider.Items;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -64,8 +70,38 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 		}
 	};
 
+	public void refresh() {
+		clear();
+		if (moreTracks != null) {
+			for (Track s : moreTracks) {
+				if (getPosition(s) < 0) {
+					add(s);
+				}
+			}
+		}
+	}
+
 	private boolean isDownloaded(Track track) {
 		// TODO: implement download manager
+		return false;
+	}
+
+	private boolean isPlaying(String name) {
+
+		String selection = PlaylistProvider.Items.NAME + " = ? and "
+				+ PlaylistProvider.Items.IS_PLAYING + " = ?";
+		String[] selectionArgs = new String[2];
+		selectionArgs[0] = name;
+		selectionArgs[1] = "1";
+		String sortOrder = PlaylistProvider.Items.PLAY_ORDER + " asc";
+
+		Cursor c = getContext().getContentResolver().query(
+				PlaylistProvider.CONTENT_URI, null, selection, selectionArgs,
+				sortOrder);
+		if (c.moveToFirst()) {
+			c.close();
+			return true;
+		}
 		return false;
 	}
 
@@ -81,10 +117,10 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 				.findViewById(R.id.TrackItemStatusImage);
 		TextView name = (TextView) convertView
 				.findViewById(R.id.TrackItemNameText);
-		
+
 		ProgressBar titleProgressBar;
-		titleProgressBar = (ProgressBar) parent.getRootView()
-				.findViewById(R.id.leadProgressBar);
+		titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
+				R.id.leadProgressBar);
 		// hide the progress bar if it is not needed
 		titleProgressBar.setVisibility(ProgressBar.GONE);
 
@@ -92,8 +128,10 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 			// image.setImageDrawable(getContext().getResources().getDrawable(
 			// isPlayable(story) ? R.drawable.icon_listen_main
 			// : R.drawable.bullet));
-			image.setImageDrawable(getContext().getResources().getDrawable(
-					R.drawable.icon_listen_main));
+			if (isPlaying(track.getName()))
+				image.setImageResource(R.drawable.icon_listen_main);
+			else
+				image.setImageResource(R.drawable.icon);
 			image.setVisibility(View.VISIBLE);
 			name.setText(track.getName());
 		}

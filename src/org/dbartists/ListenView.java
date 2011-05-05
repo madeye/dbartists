@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
@@ -207,7 +208,7 @@ public class ListenView extends FrameLayout implements OnClickListener,
 		ContentValues values = new ContentValues();
 		values.put(Items.NAME, entry.title);
 		values.put(Items.URL, entry.url);
-		values.put(Items.IS_READ, false);
+		values.put(Items.IS_PLAYING, false);
 		values.put(Items.PLAY_ORDER,
 				PlaylistProvider.getMax(this.getContext()) + 1);
 		values.put(Items.STORY_ID, entry.artist.getId());
@@ -261,9 +262,10 @@ public class ListenView extends FrameLayout implements OnClickListener,
 	private class RemotePlayReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			long id = intent.getLongExtra(Constants.EXTRA_TRACK_ID, -1);
 			String name = intent.getStringExtra(Constants.EXTRA_TRACK_NAME);
 			String url = intent.getStringExtra(Constants.EXTRA_TRACK_URL);
-			PlaylistEntry entry = new PlaylistEntry(-1, url, name, true, -1);
+			PlaylistEntry entry = new PlaylistEntry(id, url, name, true, -1);
 			if (player != null) {
 				try {
 					player.setCurrent(entry);

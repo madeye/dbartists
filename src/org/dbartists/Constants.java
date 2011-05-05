@@ -38,6 +38,7 @@ public class Constants {
   public static final String EXTRA_ARTIST_URL = "artist_url";
   public static final String EXTRA_ARTIST_IMG = "artist_img";
   
+  public static final String EXTRA_TRACK_ID = "track_id";
   public static final String EXTRA_TRACK_NAME = "track_name";
   public static final String EXTRA_TRACK_URL = "track_url";
   public static final String REMOTE_PLAY_ACTION = "org.dbartists.REMOTE_PLAY_ACTION";
