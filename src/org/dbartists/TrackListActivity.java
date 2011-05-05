@@ -112,12 +112,15 @@ public class TrackListActivity extends PlayerActivity implements
 		if (playNow) {
 			this.listen(entry);
 		}
-
+		
+		boolean start = false;
 		List<PlaylistEntry> entries = new ArrayList<PlaylistEntry>();
 		for (Track t : trackCache.values()) {
-			if (t == track)
+			if (t == track) {
+				start = true;
 				continue;
-			if (!existInPlaylist(t.getName(), true)) {
+			}
+			if (start && !existInPlaylist(t.getName(), true)) {
 				PlaylistEntry e = new PlaylistEntry(-1, t.getUrl(),
 						t.getName(), true, -1, new Artist(artistName, artistImg,
 								artistUrl));

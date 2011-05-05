@@ -347,8 +347,11 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 					if (stream)
 						mediaPlayer.prepareAsync();
-					else
+					else {
 						mediaPlayer.prepare();
+						lastBufferPercent = 100;
+						updateProgress();
+					}
 					Log.d(LOG_TAG, "Waiting for prepare");
 				} catch (IllegalArgumentException e) {
 					Log.e(LOG_TAG, "", e);
@@ -570,10 +573,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		long id;
 		int order;
 		c.moveToFirst();
-		while (c.moveToNext()) {
-			if (c.getInt(c.getColumnIndex(PlaylistProvider.Items._ID)) == (int) current.id)
+		do {
+			if (c.getInt(c.getColumnIndex(PlaylistProvider.Items.IS_PLAYING)) != 0)
 				break;
-		}
+		} while (c.moveToNext());
 		// XXX: FIX THIS PLEASE
 		if (c.moveToNext()) {
 			id = c.getInt(c.getColumnIndex(PlaylistProvider.Items._ID));
@@ -583,7 +586,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 					.getColumnIndex(PlaylistProvider.Items.PLAY_ORDER));
 			c.close();
 			return new PlaylistEntry(id, url, title, false, order);
-		} else if (c.moveToFirst()){
+		} else if (c.moveToFirst()) {
 			id = c.getInt(c.getColumnIndex(PlaylistProvider.Items._ID));
 			title = c.getString(c.getColumnIndex(PlaylistProvider.Items.NAME));
 			url = c.getString(c.getColumnIndex(PlaylistProvider.Items.URL));
@@ -597,9 +600,9 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	}
 
 	private void markAsPlaying(long id) {
-		
+
 		Log.d(LOG_TAG, "mark as playing: " + id);
-		
+
 		ContentValues values = new ContentValues();
 		values.put(Items.IS_PLAYING, false);
 		getContentResolver().update(PlaylistProvider.CONTENT_URI, values, null,
