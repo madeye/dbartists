@@ -569,11 +569,21 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		String title = null, url = null;
 		long id;
 		int order;
+		c.moveToFirst();
 		while (c.moveToNext()) {
 			if (c.getInt(c.getColumnIndex(PlaylistProvider.Items._ID)) == (int) current.id)
 				break;
 		}
-		if (c.moveToFirst()) {
+		// XXX: FIX THIS PLEASE
+		if (c.moveToNext()) {
+			id = c.getInt(c.getColumnIndex(PlaylistProvider.Items._ID));
+			title = c.getString(c.getColumnIndex(PlaylistProvider.Items.NAME));
+			url = c.getString(c.getColumnIndex(PlaylistProvider.Items.URL));
+			order = c.getInt(c
+					.getColumnIndex(PlaylistProvider.Items.PLAY_ORDER));
+			c.close();
+			return new PlaylistEntry(id, url, title, false, order);
+		} else if (c.moveToFirst()){
 			id = c.getInt(c.getColumnIndex(PlaylistProvider.Items._ID));
 			title = c.getString(c.getColumnIndex(PlaylistProvider.Items.NAME));
 			url = c.getString(c.getColumnIndex(PlaylistProvider.Items.URL));
