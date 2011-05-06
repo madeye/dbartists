@@ -68,7 +68,7 @@ public class TopArtistsListActivity extends PlayerActivity implements
 
 		super.onCreate(savedInstanceState);
 		ViewGroup container = (ViewGroup) findViewById(R.id.Content);
-		View.inflate(this, R.layout.items, container);
+		View.inflate(this, R.layout.basic_list, container);
 
 		ListView listView = (ListView) findViewById(R.id.ListView01);
 		listView.setOnItemClickListener(this);

@@ -7,7 +7,7 @@
 		android:src="@drawable/icon_listen_main" android:layout_marginLeft="3dip"
 		android:layout_gravity="center_vertical"></ImageView>
 	<TextView android:id="@+id/TrackItemNameText"
-		android:paddingLeft="5dip" android:layout_height="wrap_content"
+		android:paddingLeft="12dip" android:layout_height="wrap_content"
 		android:layout_width="fill_parent" android:layout_gravity="center_vertical"
 		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:textColor="@color/black"></TextView>
