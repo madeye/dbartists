@@ -8,12 +8,10 @@
 
 	<string name="msg_load_more">加载更多音乐人...</string>
 
-	<string name="msg_station_list_intro">Locate stations</string>
-	<string name="msg_station_search">Locate stations</string>
-	<string name="msg_station_search_by_local">Local stations</string>
-	<string name="msg_station_search_by_other">Call sign or zip code</string>
-	<string name="msg_station_podcasts">Podcasts</string>
-	<string name="msg_station_streams">Streams</string>
+	<string name="msg_label_name">音乐人：</string>
+	<string name="msg_label_genre">流派：</string>
+	<string name="msg_label_member">成员：</string>
+	<string name="msg_label_company">唱片公司：</string>
 
 	<string name="msg_close_ad">打开/关闭广告</string>
 

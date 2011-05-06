@@ -18,18 +18,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dbartists.api.Artist;
+import org.dbartists.api.ArtistInfo;
+import org.dbartists.api.ArtistInfoFactory;
 import org.dbartists.api.Track;
 import org.dbartists.utils.PlaylistEntry;
 import org.dbartists.utils.PlaylistProvider;
 
+import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class TrackListActivity extends PlayerActivity implements
 		OnItemClickListener {
@@ -39,6 +46,9 @@ public class TrackListActivity extends PlayerActivity implements
 	private String artistUrl;
 	private String artistName;
 	private String artistImg;
+	private ArtistInfo artistInfo;
+
+	private ImageLoader dm;
 
 	protected TrackListAdapter listAdapter;
 
@@ -66,6 +76,27 @@ public class TrackListActivity extends PlayerActivity implements
 		return true;
 	}
 
+	private Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+
+			TextView name = (TextView) findViewById(R.id.artistName);
+			TextView genre = (TextView) findViewById(R.id.artistGnere);
+			TextView member = (TextView) findViewById(R.id.artistMember);
+			TextView company = (TextView) findViewById(R.id.artistCompany);
+
+			name.setText(getString(R.string.msg_label_name)
+					+ artistInfo.getName());
+			genre.setText(getString(R.string.msg_label_genre)
+					+ artistInfo.getGenre());
+			member.setText(getString(R.string.msg_label_member)
+					+ artistInfo.getMember());
+			company.setText(getString(R.string.msg_label_company)
+					+ artistInfo.getCompany());
+
+		}
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		artistName = getIntent().getStringExtra(Constants.EXTRA_ARTIST_NAME);
@@ -74,6 +105,8 @@ public class TrackListActivity extends PlayerActivity implements
 
 		super.onCreate(savedInstanceState);
 
+		dm = new ImageLoader(this);
+
 		ViewGroup container = (ViewGroup) findViewById(R.id.Content);
 		View.inflate(this, R.layout.items, container);
 
@@ -81,6 +114,20 @@ public class TrackListActivity extends PlayerActivity implements
 		listView.setOnItemClickListener(this);
 		listAdapter = new TrackListAdapter(TrackListActivity.this);
 		listView.setAdapter(listAdapter);
+
+		ImageView image = (ImageView) findViewById(R.id.artistImage);
+		image.setTag(artistImg);
+		dm.DisplayImage(artistImg, this, image);
+
+		new Thread() {
+			@Override
+			public void run() {
+				artistInfo = ArtistInfoFactory
+						.downloadArtist(Constants.ARTIST_INFO_API_URL + "?url="
+								+ artistUrl);
+				handler.sendEmptyMessage(0);
+			}
+		}.start();
 
 		addTracks();
 	}
@@ -100,7 +147,7 @@ public class TrackListActivity extends PlayerActivity implements
 		if (playNow) {
 			this.listen(entry);
 		}
-		
+
 		boolean start = false;
 		List<PlaylistEntry> entries = new ArrayList<PlaylistEntry>();
 		for (Track t : listAdapter.getTracklist()) {
@@ -110,15 +157,15 @@ public class TrackListActivity extends PlayerActivity implements
 			}
 			if (start && !existInPlaylist(t.getName(), true)) {
 				PlaylistEntry e = new PlaylistEntry(-1, t.getUrl(),
-						t.getName(), true, -1, new Artist(artistName, artistImg,
-								artistUrl));
+						t.getName(), true, -1, new Artist(artistName,
+								artistImg, artistUrl));
 				entries.add(e);
 			}
 		}
 
 		if (entries.size() > 0)
 			this.addToPlayList(entries);
-		
+
 		listAdapter.refresh();
 
 	}

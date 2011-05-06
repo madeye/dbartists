@@ -35,7 +35,6 @@ public class Constants {
   public static final String EXTRA_ARTIST_NAME = "artist_name";
   public static final String EXTRA_ARTIST_URL = "artist_url";
   public static final String EXTRA_ARTIST_IMG = "artist_img";
-  public static final String EXTRA_ARTIST_GENRE = "artist_genre";
   
   public static final String EXTRA_TRACK_ID = "track_id";
   public static final String EXTRA_TRACK_NAME = "track_name";
@@ -48,6 +47,7 @@ public class Constants {
   public static final String POP_ARTIST_API_URL = "http://dbmusician.sinaapp.com/popartists.php";
   public static final String ARTIST_MP3_API_URL = "http://dbmusician.sinaapp.com/db.php";
   public static final String SEARCH_ARTIST_API_URL = "http://dbmusician.sinaapp.com/search.php";
+  public static final String ARTIST_INFO_API_URL = "http://dbmusician.sinaapp.com/artistinfo.php";
   
 
   private Constants() {
