@@ -17,61 +17,22 @@ package org.dbartists;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class GenreActivity extends PlayerActivity implements
 		OnItemClickListener {
 
-	private ListView listView;
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		int type = getIntent().getIntExtra(Constants.EXTRA_SUBACTIVITY_ID, -1);
-		super.onCreate(savedInstanceState);
-		ViewGroup container = (ViewGroup) findViewById(R.id.Content);
-		ViewGroup.inflate(this, R.layout.basic_list, container);
-		listView = (ListView) findViewById(R.id.ListView01);
-
-		Resources res = getResources();
-		int[] genre_values = res.getIntArray(R.array.genre_value);
-		SubActivity[] activities = new SubActivity[genre_values.length];
-
-		for (int n = 0; n < genre_values.length; n++) {
-			Intent t = new Intent(this, ArtistsListActivity.class);
-			t.putExtra(Constants.EXTRA_GENRE_ID, genre_values[n]);
-			t.putExtra(Constants.EXTRA_PAGE, 1);
-			activities[n] = new SubActivity(t);
+	private class GenreListAdapter extends ArrayAdapter<SubActivity> {
+		public GenreListAdapter(SubActivity[] activities) {
+			super(GenreActivity.this, R.layout.main_item, R.id.list_content,
+					activities);
 		}
-
-		listView.setAdapter(new GenreListAdapter(activities));
-		listView.setOnItemClickListener(this);
-
-		ProgressBar titleProgressBar;
-		titleProgressBar = (ProgressBar) this
-				.findViewById(R.id.leadProgressBar);
-		// hide the progress bar if it is not needed
-		titleProgressBar.setVisibility(ProgressBar.GONE);
-
-	}
-
-	@Override
-	public CharSequence getMainTitle() {
-		return getString(R.string.msg_genre);
-	}
-
-	@Override
-	public boolean isRefreshable() {
-		return false;
 	}
 
 	private class SubActivity {
@@ -92,11 +53,46 @@ public class GenreActivity extends PlayerActivity implements
 		}
 	}
 
-	private class GenreListAdapter extends ArrayAdapter<SubActivity> {
-		public GenreListAdapter(SubActivity[] activities) {
-			super(GenreActivity.this, R.layout.main_item, R.id.list_content,
-					activities);
+	private ListView listView;
+
+	@Override
+	public CharSequence getMainTitle() {
+		return getString(R.string.msg_genre);
+	}
+
+	@Override
+	public boolean isRefreshable() {
+		return false;
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		int type = getIntent().getIntExtra(Constants.EXTRA_SUBACTIVITY_ID, -1);
+		super.onCreate(savedInstanceState);
+		ViewGroup container = (ViewGroup) findViewById(R.id.Content);
+		View.inflate(this, R.layout.basic_list, container);
+		listView = (ListView) findViewById(R.id.ListView01);
+
+		Resources res = getResources();
+		int[] genre_values = res.getIntArray(R.array.genre_value);
+		SubActivity[] activities = new SubActivity[genre_values.length];
+
+		for (int n = 0; n < genre_values.length; n++) {
+			Intent t = new Intent(this, ArtistsListActivity.class);
+			t.putExtra(Constants.EXTRA_GENRE_ID, genre_values[n]);
+			t.putExtra(Constants.EXTRA_PAGE, 1);
+			activities[n] = new SubActivity(t);
 		}
+
+		listView.setAdapter(new GenreListAdapter(activities));
+		listView.setOnItemClickListener(this);
+
+		ProgressBar titleProgressBar;
+		titleProgressBar = (ProgressBar) this
+				.findViewById(R.id.leadProgressBar);
+		// hide the progress bar if it is not needed
+		titleProgressBar.setVisibility(View.GONE);
+
 	}
 
 	@Override

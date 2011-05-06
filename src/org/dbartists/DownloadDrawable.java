@@ -14,8 +14,8 @@
 
 package org.dbartists;
 
-import android.graphics.drawable.Drawable;
-import android.util.Log;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -23,8 +23,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import java.io.IOException;
-import java.io.InputStream;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 public class DownloadDrawable {
   private static final String LOG_TAG = DownloadDrawable.class.getName();

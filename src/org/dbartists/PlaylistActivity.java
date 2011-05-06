@@ -14,70 +14,28 @@
 
 package org.dbartists;
 
-import org.dbartists.api.Artist;
-import org.dbartists.utils.PlaylistEntry;
 import org.dbartists.utils.PlaylistProvider;
 import org.dbartists.utils.PlaylistProvider.Items;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.provider.BaseColumns;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.SimpleCursorAdapter;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.TextView;
 
 public class PlaylistActivity extends Activity implements OnClickListener,
 		OnItemClickListener {
-	private static final String LOG_TAG = PlaylistActivity.class.getName();
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.playlist);
-		Button clearButton = (Button) findViewById(R.id.PlaylistClear);
-		clearButton.setOnClickListener(this);
-
-		refreshList();
-	}
-
-	private void refreshList() {
-		String[] cols = new String[] { Items.IS_PLAYING, Items.NAME };
-		Cursor cursor = managedQuery(PlaylistProvider.CONTENT_URI, null, null,
-				null, Items.PLAY_ORDER);
-		Log.d(LOG_TAG, "" + cursor.getCount());
-		startManagingCursor(cursor);
-
-		ListAdapter adapter = new MySimpleCursorAdapter(this,
-				R.layout.playlist_item, cursor, cols,
-				new int[] { R.id.StationItemPlayableImage, R.id.PlaylistItemText });
-
-		ListView listView = (ListView) findViewById(R.id.ListView01);
-		listView.setAdapter(adapter);
-		listView.setOnItemClickListener(this);
-	}
-
 	public class MyDataViewBinder implements SimpleCursorAdapter.ViewBinder {
 		@Override
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
@@ -109,6 +67,8 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 
 	}
 
+	private static final String LOG_TAG = PlaylistActivity.class.getName();
+
 	@Override
 	public void onClick(View arg0) {
 		switch (arg0.getId()) {
@@ -121,12 +81,22 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 	}
 
 	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.playlist);
+		Button clearButton = (Button) findViewById(R.id.PlaylistClear);
+		clearButton.setOnClickListener(this);
+
+		refreshList();
+	}
+
+	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		Cursor c = (Cursor) parent.getItemAtPosition(position);
 		if (c != null) {
 			c.moveToPosition(position);
-			long playlistId = c.getLong(c.getColumnIndex(Items._ID));
+			long playlistId = c.getLong(c.getColumnIndex(BaseColumns._ID));
 			String name = c.getString(c.getColumnIndex(Items.NAME));
 			String url = c.getString(c.getColumnIndex(Items.URL));
 			Intent it = new Intent(Constants.REMOTE_PLAY_ACTION);
@@ -139,5 +109,21 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 		}
 		// TODO: play audio
 		finish();
+	}
+
+	private void refreshList() {
+		String[] cols = new String[] { Items.IS_PLAYING, Items.NAME };
+		Cursor cursor = managedQuery(PlaylistProvider.CONTENT_URI, null, null,
+				null, Items.PLAY_ORDER);
+		Log.d(LOG_TAG, "" + cursor.getCount());
+		startManagingCursor(cursor);
+
+		ListAdapter adapter = new MySimpleCursorAdapter(this,
+				R.layout.playlist_item, cursor, cols,
+				new int[] { R.id.StationItemPlayableImage, R.id.PlaylistItemText });
+
+		ListView listView = (ListView) findViewById(R.id.ListView01);
+		listView.setAdapter(adapter);
+		listView.setOnItemClickListener(this);
 	}
 }

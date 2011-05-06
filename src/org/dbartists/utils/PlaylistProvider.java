@@ -30,23 +30,66 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 public class PlaylistProvider extends ContentProvider {
+  public static class Items implements BaseColumns {
+    public static final String NAME = "name";
+    public static final String URL = "url";
+    public static final String PLAY_ORDER = "play_order";
+    public static final String IS_PLAYING = "is_playing";
+    public static final String STORY_ID = "story_id";
+    public static final String[] COLUMNS = { NAME, URL, PLAY_ORDER, IS_PLAYING,
+        STORY_ID };
+    public static final String[] ALL_COLUMNS = { BaseColumns._ID, NAME, URL,
+        PLAY_ORDER, IS_PLAYING, STORY_ID };
+
+    // This class cannot be instantiated
+    private Items() {
+    }
+  }
+  protected static class PlaylistHelper extends SQLiteOpenHelper {
+    PlaylistHelper(Context context) {
+      super(context, DATABASE_NAME, null /* no cursor factory */,
+          DATABASE_VERSION);
+    }
+
+    @SuppressWarnings("unused")
+    private void dropTable(SQLiteDatabase db) {
+      db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+      db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + BaseColumns._ID
+          + " INTEGER PRIMARY KEY," + Items.NAME + " TEXT," + Items.URL
+          + " VARCHAR," + Items.IS_PLAYING + " BOOLEAN," + Items.PLAY_ORDER
+          + " INTEGER," + Items.STORY_ID + " TEXT" + ");");
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+      Log.w(PlaylistHelper.class.getName(), "Upgrading database from version "
+          + oldVersion + " to " + newVersion);
+      if (oldVersion < 3) {
+        try {
+          // TODO: This is kind of a hack, and it would be better to check for
+          // the existence of the column first.
+        	db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+            db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + BaseColumns._ID
+                    + " INTEGER PRIMARY KEY," + Items.NAME + " TEXT," + Items.URL
+                    + " VARCHAR," + Items.IS_PLAYING + " BOOLEAN," + Items.PLAY_ORDER
+                    + " INTEGER," + Items.STORY_ID + " TEXT" + ");");
+        } catch (SQLException error) {
+          Log.e(LOG_TAG, error.toString());
+        }
+      }
+    }
+  }
   public static final Uri CONTENT_URI = Uri
       .parse("content://org.dbartists.utils.Playlist");
   private static final String DATABASE_NAME = "playlist.db";
   protected static final int DATABASE_VERSION = 3;
   protected static final String TABLE_NAME = "items";
-  private static final String LOG_TAG = PlaylistProvider.class.getName();
-  private PlaylistHelper helper;
 
-  /**
-   * For testing purposes, allows to override the existing helper so we don't
-   * touch the actual filesystem.
-   * 
-   * @param helper
-   */
-  protected void setHelper(PlaylistHelper helper) {
-    this.helper = helper;
-  }
+  private static final String LOG_TAG = PlaylistProvider.class.getName();
 
   public static int getMax(Context context) {
     PlaylistHelper temp = new PlaylistHelper(context);
@@ -73,6 +116,8 @@ public class PlaylistProvider extends ContentProvider {
         + TABLE_NAME, null);
   }
 
+  private PlaylistHelper helper;
+
   @Override
   public int delete(Uri uri, String selection, String[] selectionArgs) {
     SQLiteDatabase db = helper.getWritableDatabase();
@@ -80,6 +125,16 @@ public class PlaylistProvider extends ContentProvider {
     String realSelection = getSelectionFromId(uri, selection);
     int result = db.delete(TABLE_NAME, realSelection, selectionArgs);
     return result;
+  }
+
+  private String getSelectionFromId(Uri uri, String selection) {
+    long id = ContentUris.parseId(uri);
+    String realSelection = selection == null ? "" : selection + " and ";
+    if (id != -1) {
+      realSelection += BaseColumns._ID + " = " + id;
+      return realSelection;
+    }
+    return selection;
   }
 
   @Override
@@ -113,6 +168,21 @@ public class PlaylistProvider extends ContentProvider {
     return result;
   }
 
+  public void reInstallDatabase () {
+	  SQLiteDatabase db = helper.getWritableDatabase();
+	  helper.dropTable(db);	  
+  }
+  
+  /**
+   * For testing purposes, allows to override the existing helper so we don't
+   * touch the actual filesystem.
+   * 
+   * @param helper
+   */
+  protected void setHelper(PlaylistHelper helper) {
+    this.helper = helper;
+  }
+
   @Override
   public int update(Uri uri, ContentValues values, String selection,
       String[] selectionArgs) {
@@ -121,75 +191,5 @@ public class PlaylistProvider extends ContentProvider {
     Log.d(LOG_TAG, "update where " + realSelection);
     int result = db.update(TABLE_NAME, values, realSelection, selectionArgs);
     return result;
-  }
-
-  private String getSelectionFromId(Uri uri, String selection) {
-    long id = ContentUris.parseId(uri);
-    String realSelection = selection == null ? "" : selection + " and ";
-    if (id != -1) {
-      realSelection += Items._ID + " = " + id;
-      return realSelection;
-    }
-    return selection;
-  }
-
-  public static class Items implements BaseColumns {
-    public static final String NAME = "name";
-    public static final String URL = "url";
-    public static final String PLAY_ORDER = "play_order";
-    public static final String IS_PLAYING = "is_playing";
-    public static final String STORY_ID = "story_id";
-    public static final String[] COLUMNS = { NAME, URL, PLAY_ORDER, IS_PLAYING,
-        STORY_ID };
-    public static final String[] ALL_COLUMNS = { BaseColumns._ID, NAME, URL,
-        PLAY_ORDER, IS_PLAYING, STORY_ID };
-
-    // This class cannot be instantiated
-    private Items() {
-    }
-  }
-  
-  public void reInstallDatabase () {
-	  SQLiteDatabase db = helper.getWritableDatabase();
-	  helper.dropTable(db);	  
-  }
-
-  protected static class PlaylistHelper extends SQLiteOpenHelper {
-    PlaylistHelper(Context context) {
-      super(context, DATABASE_NAME, null /* no cursor factory */,
-          DATABASE_VERSION);
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-      db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + Items._ID
-          + " INTEGER PRIMARY KEY," + Items.NAME + " TEXT," + Items.URL
-          + " VARCHAR," + Items.IS_PLAYING + " BOOLEAN," + Items.PLAY_ORDER
-          + " INTEGER," + Items.STORY_ID + " TEXT" + ");");
-    }
-
-    @SuppressWarnings("unused")
-    private void dropTable(SQLiteDatabase db) {
-      db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-      Log.w(PlaylistHelper.class.getName(), "Upgrading database from version "
-          + oldVersion + " to " + newVersion);
-      if (oldVersion < 3) {
-        try {
-          // TODO: This is kind of a hack, and it would be better to check for
-          // the existence of the column first.
-        	db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-            db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + Items._ID
-                    + " INTEGER PRIMARY KEY," + Items.NAME + " TEXT," + Items.URL
-                    + " VARCHAR," + Items.IS_PLAYING + " BOOLEAN," + Items.PLAY_ORDER
-                    + " INTEGER," + Items.STORY_ID + " TEXT" + ");");
-        } catch (SQLException error) {
-          Log.e(LOG_TAG, error.toString());
-        }
-      }
-    }
   }
 }

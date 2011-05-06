@@ -14,25 +14,20 @@
 
 package org.dbartists;
 
+import java.net.URLEncoder;
+
+import org.dbartists.api.Artist;
+
 import android.app.SearchManager;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.AdapterView.OnItemClickListener;
-
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.dbartists.api.Artist;
-import org.dbartists.api.ArtistFactory;
 
 public class SearchArtistsListActivity extends PlayerActivity implements
 		OnItemClickListener {
@@ -43,6 +38,23 @@ public class SearchArtistsListActivity extends PlayerActivity implements
 	private String searchKeywords;
 
 	protected SearchArtistsListAdapter listAdapter;
+
+	private void addArtists() {
+
+		listAdapter.addMoreArtists(apiUrl, 0);
+
+	}
+
+	@Override
+	public CharSequence getMainTitle() {
+		Log.d(TAG, description);
+		return description;
+	}
+
+	@Override
+	public boolean isRefreshable() {
+		return true;
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +70,7 @@ public class SearchArtistsListActivity extends PlayerActivity implements
 
 		super.onCreate(savedInstanceState);
 		ViewGroup container = (ViewGroup) findViewById(R.id.Content);
-		ViewGroup.inflate(this, R.layout.items, container);
+		View.inflate(this, R.layout.items, container);
 
 		ListView listView = (ListView) findViewById(R.id.ListView01);
 		listView.setOnItemClickListener(this);
@@ -72,30 +84,9 @@ public class SearchArtistsListActivity extends PlayerActivity implements
 			ProgressBar titleProgressBar;
 			titleProgressBar = (ProgressBar) findViewById(R.id.leadProgressBar);
 			// hide the progress bar if it is not needed
-			titleProgressBar.setVisibility(ProgressBar.GONE);
+			titleProgressBar.setVisibility(View.GONE);
 		}
 
-	}
-
-	@Override
-	public void onNewIntent(Intent intent) {
-		String queryAction = intent.getAction();
-		if (queryAction.equals(Intent.ACTION_SEARCH)) {
-			searchKeywords = intent.getStringExtra(SearchManager.QUERY);
-			description = getString(R.string.msg_search);
-			ProgressBar titleProgressBar;
-			titleProgressBar = (ProgressBar) findViewById(R.id.leadProgressBar);
-			// hide the progress bar if it is not needed
-			titleProgressBar.setVisibility(ProgressBar.VISIBLE);
-			if (searchKeywords != null) {
-				apiUrl = Constants.SEARCH_ARTIST_API_URL + "?p="
-						+ URLEncoder.encode(searchKeywords.trim());
-				description = description + searchKeywords;
-				if (titleText != null)
-					titleText.setText(getMainTitle());
-				refresh();
-			}
-		}
 	}
 
 	@Override
@@ -113,21 +104,25 @@ public class SearchArtistsListActivity extends PlayerActivity implements
 		}
 	}
 
-	private void addArtists() {
-
-		listAdapter.addMoreArtists(apiUrl, 0);
-
-	}
-
 	@Override
-	public CharSequence getMainTitle() {
-		Log.d(TAG, description);
-		return description;
-	}
-
-	@Override
-	public boolean isRefreshable() {
-		return true;
+	public void onNewIntent(Intent intent) {
+		String queryAction = intent.getAction();
+		if (queryAction.equals(Intent.ACTION_SEARCH)) {
+			searchKeywords = intent.getStringExtra(SearchManager.QUERY);
+			description = getString(R.string.msg_search);
+			ProgressBar titleProgressBar;
+			titleProgressBar = (ProgressBar) findViewById(R.id.leadProgressBar);
+			// hide the progress bar if it is not needed
+			titleProgressBar.setVisibility(View.VISIBLE);
+			if (searchKeywords != null) {
+				apiUrl = Constants.SEARCH_ARTIST_API_URL + "?p="
+						+ URLEncoder.encode(searchKeywords.trim());
+				description = description + searchKeywords;
+				if (titleText != null)
+					titleText.setText(getMainTitle());
+				refresh();
+			}
+		}
 	}
 
 	@Override

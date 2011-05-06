@@ -14,25 +14,22 @@
 
 package org.dbartists;
 
-import android.content.Intent;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.dbartists.api.Artist;
+import org.dbartists.api.Track;
+import org.dbartists.utils.PlaylistEntry;
+import org.dbartists.utils.PlaylistProvider;
+
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.dbartists.api.Artist;
-import org.dbartists.api.Track;
-import org.dbartists.utils.PlaylistEntry;
-import org.dbartists.utils.PlaylistProvider;
+import android.widget.ListView;
 
 public class TrackListActivity extends PlayerActivity implements
 		OnItemClickListener {
@@ -45,27 +42,28 @@ public class TrackListActivity extends PlayerActivity implements
 
 	protected TrackListAdapter listAdapter;
 
-	private static Map<Integer, Track> trackCache = new HashMap<Integer, Track>();
-
-	public static Track getTrackFromCache(int storyId) {
-		Track result = trackCache.get(storyId);
-		if (result == null) {
-			// result = Story.StoryFactory.downloadStory(storyId);
-			// storyCache.put(storyId, result);
-		}
-		return result;
+	private void addTracks() {
+		String trackUrl = apiUrl + "?url=" + artistUrl;
+		listAdapter.addMoreTracks(trackUrl, 0);
 	}
 
-	public static void addAllToTrackCache(List<Track> tracks) {
-		for (Track track : tracks) {
-			trackCache.put(track.getId(), track);
-		}
+	private boolean existInPlaylist(String name, boolean next) {
+		String selection = PlaylistProvider.Items.NAME + " = ?";
+		String[] selectionArgs = new String[1];
+		selectionArgs[0] = name;
+		String sort = PlaylistProvider.Items.PLAY_ORDER
+				+ (next ? " asc" : " desc");
+		return retrievePlaylistItem(selection, selectionArgs, sort);
 	}
 
 	@Override
-	public void onLowMemory() {
-		super.onLowMemory();
-		trackCache.clear();
+	public CharSequence getMainTitle() {
+		return artistName;
+	}
+
+	@Override
+	public boolean isRefreshable() {
+		return true;
 	}
 
 	@Override
@@ -77,7 +75,7 @@ public class TrackListActivity extends PlayerActivity implements
 		super.onCreate(savedInstanceState);
 
 		ViewGroup container = (ViewGroup) findViewById(R.id.Content);
-		ViewGroup.inflate(this, R.layout.items, container);
+		View.inflate(this, R.layout.items, container);
 
 		ListView listView = (ListView) findViewById(R.id.ListView01);
 		listView.setOnItemClickListener(this);
@@ -94,16 +92,6 @@ public class TrackListActivity extends PlayerActivity implements
 		playTrack(s, true);
 	}
 
-	private void addTracks() {
-		String trackUrl = apiUrl + "?url=" + artistUrl;
-		listAdapter.addMoreTracks(trackUrl, 0);
-	}
-
-	@Override
-	public CharSequence getMainTitle() {
-		return artistName;
-	}
-
 	private void playTrack(Track track, boolean playNow) {
 		Log.d(TAG, "play now: " + track.getUrl());
 		PlaylistEntry entry = new PlaylistEntry(-1, track.getUrl(),
@@ -115,7 +103,7 @@ public class TrackListActivity extends PlayerActivity implements
 		
 		boolean start = false;
 		List<PlaylistEntry> entries = new ArrayList<PlaylistEntry>();
-		for (Track t : trackCache.values()) {
+		for (Track t : listAdapter.getTracklist()) {
 			if (t == track) {
 				start = true;
 				continue;
@@ -135,13 +123,10 @@ public class TrackListActivity extends PlayerActivity implements
 
 	}
 
-	private boolean existInPlaylist(String name, boolean next) {
-		String selection = PlaylistProvider.Items.NAME + " = ?";
-		String[] selectionArgs = new String[1];
-		selectionArgs[0] = name;
-		String sort = PlaylistProvider.Items.PLAY_ORDER
-				+ (next ? " asc" : " desc");
-		return retrievePlaylistItem(selection, selectionArgs, sort);
+	@Override
+	public void refresh() {
+		listAdapter.clear();
+		addTracks();
 	}
 
 	private boolean retrievePlaylistItem(String selection,
@@ -153,16 +138,5 @@ public class TrackListActivity extends PlayerActivity implements
 			return true;
 		else
 			return false;
-	}
-
-	@Override
-	public boolean isRefreshable() {
-		return true;
-	}
-
-	@Override
-	public void refresh() {
-		listAdapter.clear();
-		addTracks();
 	}
 }

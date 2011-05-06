@@ -14,10 +14,13 @@
 
 package org.dbartists;
 
+import java.util.List;
+
+import org.dbartists.api.Artist;
+import org.dbartists.api.ArtistFactory;
+
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -29,20 +32,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.dbartists.api.*;
-
-import org.apache.http.client.ClientProtocolException;
-import org.dbartists.api.Artist;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 public class SearchArtistsListAdapter extends ArrayAdapter<Artist> {
 	private static final String LOG_TAG = SearchArtistsListAdapter.class
 			.getName();
@@ -51,12 +40,6 @@ public class SearchArtistsListAdapter extends ArrayAdapter<Artist> {
 	private final static int MSG_ARTISTS_LOADED = 0;
 
 	private ImageLoader dm;
-
-	public SearchArtistsListAdapter(Context context) {
-		super(context, R.layout.artist_item);
-		inflater = LayoutInflater.from(getContext());
-		dm = new ImageLoader(context);
-	}
 
 	private List<Artist> moreArtists;
 
@@ -79,6 +62,26 @@ public class SearchArtistsListAdapter extends ArrayAdapter<Artist> {
 		}
 	};
 
+	public SearchArtistsListAdapter(Context context) {
+		super(context, R.layout.artist_item);
+		inflater = LayoutInflater.from(getContext());
+		dm = new ImageLoader(context);
+	}
+
+	public void addMoreArtists(final String url, final int startId) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				getMoreArtists(url, startId);
+				handler.sendEmptyMessage(MSG_ARTISTS_LOADED);
+			}
+		}).start();
+	}
+
+	private void getMoreArtists(String url, int startId) {
+		moreArtists = ArtistFactory.downloadArtists(url, startId);
+	}
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
@@ -96,7 +99,7 @@ public class SearchArtistsListAdapter extends ArrayAdapter<Artist> {
 		titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
 				R.id.leadProgressBar);
 		// hide the progress bar if it is not needed
-		titleProgressBar.setVisibility(ProgressBar.GONE);
+		titleProgressBar.setVisibility(View.GONE);
 
 		if (artist != null) {
 
@@ -113,19 +116,5 @@ public class SearchArtistsListAdapter extends ArrayAdapter<Artist> {
 			name.setText(R.string.msg_search_more);
 		}
 		return convertView;
-	}
-
-	public void addMoreArtists(final String url, final int startId) {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				getMoreArtists(url, startId);
-				handler.sendEmptyMessage(MSG_ARTISTS_LOADED);
-			}
-		}).start();
-	}
-
-	private void getMoreArtists(String url, int startId) {
-		moreArtists = ArtistFactory.downloadArtists(url, startId);
 	}
 }

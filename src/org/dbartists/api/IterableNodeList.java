@@ -28,13 +28,13 @@ public class IterableNodeList implements Iterable<Node>, Iterator<Node> {
   }
 
   @Override
-  public Iterator<Node> iterator() {
-    return this;
+  public boolean hasNext() {
+    return index < nodeList.getLength();
   }
 
   @Override
-  public boolean hasNext() {
-    return index < nodeList.getLength();
+  public Iterator<Node> iterator() {
+    return this;
   }
 
   @Override

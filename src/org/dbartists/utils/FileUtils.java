@@ -1,13 +1,28 @@
 package org.dbartists.utils;
 
-import android.app.Activity;
-
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import android.app.Activity;
+
 public class FileUtils {
+  /**
+   * Closes the specified stream.
+   * 
+   * @param stream The stream to close.
+   */
+  private static void closeStream(Closeable stream) {
+    if (stream != null) {
+      try {
+        stream.close();
+      } catch (IOException e) {
+        // Ignore
+      }
+    }
+  }
+
   public static CharSequence readFile(Activity activity, int id) {
     BufferedReader in = null;
     try {
@@ -26,21 +41,6 @@ public class FileUtils {
       return "";
     } finally {
       closeStream(in);
-    }
-  }
-
-  /**
-   * Closes the specified stream.
-   * 
-   * @param stream The stream to close.
-   */
-  private static void closeStream(Closeable stream) {
-    if (stream != null) {
-      try {
-        stream.close();
-      } catch (IOException e) {
-        // Ignore
-      }
     }
   }
 }

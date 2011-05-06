@@ -14,6 +14,8 @@
 
 package org.dbartists;
 
+import org.dbartists.api.Artist;
+
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -21,16 +23,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.AdapterView.OnItemClickListener;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.dbartists.api.Artist;
-import org.dbartists.api.ArtistFactory;
+import android.widget.ListView;
 
 public class ArtistsListActivity extends PlayerActivity implements
 		OnItemClickListener {
@@ -42,6 +36,26 @@ public class ArtistsListActivity extends PlayerActivity implements
 	private String description;
 
 	protected ArtistsListAdapter listAdapter;
+
+	private void addArtists() {
+
+		apiUrl = apiUrl + "?g=" + genreId + "&p=" + page;
+
+		listAdapter.addMoreArtists(apiUrl, 20 * (page - 1));
+
+		page++;
+	}
+
+	@Override
+	public CharSequence getMainTitle() {
+		Log.d(TAG, description);
+		return description;
+	}
+
+	@Override
+	public boolean isRefreshable() {
+		return true;
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +69,7 @@ public class ArtistsListActivity extends PlayerActivity implements
 
 		super.onCreate(savedInstanceState);
 		ViewGroup container = (ViewGroup) findViewById(R.id.Content);
-		ViewGroup.inflate(this, R.layout.items, container);
+		View.inflate(this, R.layout.items, container);
 
 		ListView listView = (ListView) findViewById(R.id.ListView01);
 		listView.setOnItemClickListener(this);
@@ -79,26 +93,6 @@ public class ArtistsListActivity extends PlayerActivity implements
 			i.putExtra(Constants.EXTRA_ARTIST_URL, s.getUrl());
 			startActivityWithoutAnimation(i);
 		}
-	}
-
-	private void addArtists() {
-
-		apiUrl = apiUrl + "?g=" + genreId + "&p=" + page;
-
-		listAdapter.addMoreArtists(apiUrl, 20 * (page - 1));
-
-		page++;
-	}
-
-	@Override
-	public CharSequence getMainTitle() {
-		Log.d(TAG, description);
-		return description;
-	}
-
-	@Override
-	public boolean isRefreshable() {
-		return true;
 	}
 
 	@Override

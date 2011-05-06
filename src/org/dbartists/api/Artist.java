@@ -2,7 +2,6 @@ package org.dbartists.api;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 
 import org.dbartists.StreamProxy;
 
@@ -33,36 +32,36 @@ public class Artist {
 		this.url = url;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
+	public String getId() {
+		return id;
 	}
 
 	public String getImg() {
 		return img;
 	}
 
-	public void setImg(String img) {
-		this.img = img;
+	public String getName() {
+		return name;
 	}
 
-	public String getId() {
-		return id;
+	public String getUrl() {
+		return url;
 	}
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 	
 }

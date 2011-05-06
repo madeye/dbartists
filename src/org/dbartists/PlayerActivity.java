@@ -14,36 +14,33 @@
 
 package org.dbartists;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+
+import org.dbartists.utils.PlaylistEntry;
+
 import android.app.Activity;
 import android.app.ActivityGroup;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-
-import org.dbartists.utils.PlaylistEntry;
 
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
@@ -57,14 +54,37 @@ import com.google.ads.AdView;
  */
 public abstract class PlayerActivity extends ActivityGroup implements
 		Refreshable {
-	protected TextView titleText;
+	private enum MenuId {
+		ABOUT, REFRESH, CLOSEAD
+	}
 
-	public abstract CharSequence getMainTitle();
+	protected TextView titleText;
 
 	private static final String LOG_TAG = PlayerActivity.class.getName();
 	private ListenView listenView;
 	private static boolean ignoreWifi = false;
 	private static boolean closeAd = false;
+
+	protected void addToPlayList(List<PlaylistEntry> entries) {
+		listenView.addToPlayList(entries);
+	}
+
+	private void closeAd() {
+		if (closeAd)
+			closeAd = false;
+		else
+			closeAd = true;
+		LinearLayout layout = (LinearLayout) findViewById(R.id.ad);
+		layout.setVisibility(View.GONE);
+	}
+
+	@Override
+	public void finish() {
+		super.finish();
+		noAnimation();
+	}
+
+	public abstract CharSequence getMainTitle();
 
 	private int getVersionCode() {
 		int version = -1;
@@ -75,6 +95,38 @@ public abstract class PlayerActivity extends ActivityGroup implements
 		} catch (PackageManager.NameNotFoundException e) {
 		}
 		return version;
+	}
+
+	@Override
+	public boolean isRefreshable() {
+		return false;
+	}
+
+	protected void listen(PlaylistEntry entry) {
+		listenView.listen(entry);
+	}
+
+	/**
+	 * Prevents the default animation on the pending transition. Only works on
+	 * SDK version 5 and up, but may be safely called from any version.
+	 */
+	protected void noAnimation() {
+		try {
+			Method overridePendingTransition = Activity.class.getMethod(
+					"overridePendingTransition", new Class[] { int.class,
+							int.class });
+			overridePendingTransition.invoke(this, 0, 0);
+		} catch (SecurityException e) {
+			Log.w(LOG_TAG, "", e);
+		} catch (NoSuchMethodException e) {
+			// Don't log an error here; we anticipate an error on SDK < 5
+		} catch (IllegalArgumentException e) {
+			Log.w(LOG_TAG, "", e);
+		} catch (IllegalAccessException e) {
+			Log.w(LOG_TAG, "", e);
+		} catch (InvocationTargetException e) {
+			Log.w(LOG_TAG, "", e);
+		}
 	}
 
 	@Override
@@ -117,6 +169,7 @@ public abstract class PlayerActivity extends ActivityGroup implements
 						.setTitle(getString(R.string.msg_allert))
 						.setPositiveButton(R.string.msg_yes,
 								new DialogInterface.OnClickListener() {
+									@Override
 									public void onClick(DialogInterface dialog,
 											int id) {
 										ignoreWifi = true;
@@ -125,6 +178,7 @@ public abstract class PlayerActivity extends ActivityGroup implements
 								})
 						.setNegativeButton(R.string.msg_no,
 								new DialogInterface.OnClickListener() {
+									@Override
 									public void onClick(DialogInterface dialog,
 											int id) {
 										PlayerActivity.this.finish();
@@ -139,53 +193,6 @@ public abstract class PlayerActivity extends ActivityGroup implements
 		((ViewGroup) findViewById(R.id.MediaPlayer)).addView(listenView,
 				new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT,
 						LayoutParams.WRAP_CONTENT));
-	}
-
-	@Override
-	public boolean isRefreshable() {
-		return false;
-	}
-
-	@Override
-	public void refresh() {
-	}
-
-	@Override
-	public void finish() {
-		super.finish();
-		noAnimation();
-	}
-
-	protected void startActivityWithoutAnimation(Intent i) {
-		startActivity(i);
-		noAnimation();
-	}
-
-	/**
-	 * Prevents the default animation on the pending transition. Only works on
-	 * SDK version 5 and up, but may be safely called from any version.
-	 */
-	protected void noAnimation() {
-		try {
-			Method overridePendingTransition = Activity.class.getMethod(
-					"overridePendingTransition", new Class[] { int.class,
-							int.class });
-			overridePendingTransition.invoke(this, 0, 0);
-		} catch (SecurityException e) {
-			Log.w(LOG_TAG, "", e);
-		} catch (NoSuchMethodException e) {
-			// Don't log an error here; we anticipate an error on SDK < 5
-		} catch (IllegalArgumentException e) {
-			Log.w(LOG_TAG, "", e);
-		} catch (IllegalAccessException e) {
-			Log.w(LOG_TAG, "", e);
-		} catch (InvocationTargetException e) {
-			Log.w(LOG_TAG, "", e);
-		}
-	}
-
-	private enum MenuId {
-		ABOUT, REFRESH, CLOSEAD
 	}
 
 	@Override
@@ -219,20 +226,12 @@ public abstract class PlayerActivity extends ActivityGroup implements
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void closeAd() {
-		if (closeAd)
-			closeAd = false;
-		else
-			closeAd = true;
-		LinearLayout layout = (LinearLayout) findViewById(R.id.ad);
-		layout.setVisibility(LinearLayout.GONE);
+	@Override
+	public void refresh() {
 	}
 
-	protected void listen(PlaylistEntry entry) {
-		listenView.listen(entry);
-	}
-
-	protected void addToPlayList(List<PlaylistEntry> entries) {
-		listenView.addToPlayList(entries);
+	protected void startActivityWithoutAnimation(Intent i) {
+		startActivity(i);
+		noAnimation();
 	}
 }

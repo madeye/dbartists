@@ -14,8 +14,6 @@
 
 package org.dbartists;
 
-import java.util.Map;
-
 import android.content.IntentFilter;
 
 public class Constants {

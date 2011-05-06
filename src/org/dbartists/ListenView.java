@@ -14,6 +14,13 @@
 
 package org.dbartists;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.dbartists.utils.PlaylistEntry;
+import org.dbartists.utils.PlaylistProvider;
+import org.dbartists.utils.PlaylistProvider.Items;
+
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentUris;
@@ -22,39 +29,91 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.SlidingDrawer;
-import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.SlidingDrawer;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
-
-import java.io.IOException;
-import java.util.List;
-
-import org.dbartists.utils.PlaylistEntry;
-import org.dbartists.utils.PlaylistProvider;
-import org.dbartists.utils.PlaylistProvider.Items;
+import android.widget.TextView;
 
 public class ListenView extends FrameLayout implements OnClickListener,
 		OnSeekBarChangeListener, OnDrawerOpenListener, OnDrawerCloseListener {
 
-	private static final String LOG_TAG = ListenView.class.getName();
+	private class PlaybackChangeReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String title = intent.getStringExtra(PlaybackService.EXTRA_TITLE);
+			infoText.setText(title);
+		}
+	}
 
+	private class PlaybackCloseReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			playButton.setEnabled(false);
+			playButton.setImageResource(android.R.drawable.ic_media_play);
+			progressBar.setEnabled(false);
+			progressBar.setProgress(0);
+			progressBar.setSecondaryProgress(0);
+			infoText.setText(null);
+		}
+	}
+	private class PlaybackUpdateReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			int duration = intent
+					.getIntExtra(PlaybackService.EXTRA_DURATION, 1);
+			int position = intent
+					.getIntExtra(PlaybackService.EXTRA_POSITION, 0);
+			int downloaded = intent.getIntExtra(
+					PlaybackService.EXTRA_DOWNLOADED, 1);
+			if (!playButtonisPause && player != null && player.isPlaying()) {
+				playButton.setImageResource(android.R.drawable.ic_media_pause);
+				playButtonisPause = true;
+			}
+			playButton.setEnabled(true);
+			progressBar.setEnabled(true);
+			progressBar.setMax(duration);
+			progressBar.setProgress(position);
+			progressBar.setSecondaryProgress(downloaded);
+		}
+	}
+	private class RemotePlayReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			long id = intent.getLongExtra(Constants.EXTRA_TRACK_ID, -1);
+			String name = intent.getStringExtra(Constants.EXTRA_TRACK_NAME);
+			String url = intent.getStringExtra(Constants.EXTRA_TRACK_URL);
+			PlaylistEntry entry = new PlaylistEntry(id, url, name, true, -1);
+			if (player != null) {
+				try {
+					player.setCurrent(entry);
+					player.listen(entry.url, entry.isStream);
+				} catch (IllegalArgumentException e) {
+					Log.e(LOG_TAG, "", e);
+				} catch (IllegalStateException e) {
+					Log.e(LOG_TAG, "", e);
+				} catch (IOException e) {
+					Log.e(LOG_TAG, "", e);
+				}
+			}
+		}
+	}
+	private static final String LOG_TAG = ListenView.class.getName();
 	// private ImageButton streamButton;
 	private ImageButton playButton;
 	private SeekBar progressBar;
+
 	private TextView infoText;
 	private TextView lengthText;
 	private SlidingDrawer drawer;
@@ -62,42 +121,36 @@ public class ListenView extends FrameLayout implements OnClickListener,
 
 	private BroadcastReceiver changeReceiver = new PlaybackChangeReceiver();
 	private BroadcastReceiver updateReceiver = new PlaybackUpdateReceiver();
+
 	private BroadcastReceiver closeReceiver = new PlaybackCloseReceiver();
+
 	private BroadcastReceiver remotePlayReceiver = new RemotePlayReceiver();
 
 	private ServiceConnection conn;
+
 	private PlaybackService player;
 
 	public ListenView(Context context) {
 		super(context);
 	}
 
-	private void init() {
-		ViewGroup.inflate(getContext(), R.layout.listen, this);
+	private void addPlaylistItem(PlaylistEntry entry) {
+		ContentValues values = new ContentValues();
+		values.put(Items.NAME, entry.title);
+		values.put(Items.URL, entry.url);
+		values.put(Items.IS_PLAYING, false);
+		values.put(Items.PLAY_ORDER,
+				PlaylistProvider.getMax(this.getContext()) + 1);
+		values.put(Items.STORY_ID, entry.artist.getId());
+		Log.d(LOG_TAG, "Adding playlist item to db");
+		Uri insert = this.getContext().getContentResolver()
+				.insert(PlaylistProvider.CONTENT_URI, values);
+		entry.id = ContentUris.parseId(insert);
+	}
 
-		drawer = (SlidingDrawer) findViewById(R.id.drawer);
-		drawer.setOnDrawerOpenListener(this);
-		drawer.setOnDrawerCloseListener(this);
-		playButton = (ImageButton) findViewById(R.id.StreamPlayButton);
-		playButton.setEnabled(false);
-		playButton.setOnClickListener(this);
-		// streamButton = (ImageButton) findViewById(R.id.StreamShareButton);
-		// streamButton.setOnClickListener(this);
-		// streamButton.setEnabled(false);
-
-		Button playlistButton = (Button) findViewById(R.id.StreamPlaylistButton);
-		playlistButton.setOnClickListener(this);
-
-		progressBar = (SeekBar) findViewById(R.id.StreamProgressBar);
-		progressBar.setOnSeekBarChangeListener(this);
-		progressBar.setEnabled(false);
-
-		infoText = (TextView) findViewById(R.id.StreamTextView);
-
-		lengthText = (TextView) findViewById(R.id.StreamLengthText);
-		lengthText.setText("");
-
-		attachToPlaybackService();
+	protected void addToPlayList(List<PlaylistEntry> entries) {
+		for (PlaylistEntry entry : entries)
+			addPlaylistItem(entry);
 	}
 
 	public void attachToPlaybackService() {
@@ -131,33 +184,54 @@ public class ListenView extends FrameLayout implements OnClickListener,
 				Constants.REMOTE_PLAY_FILTER);
 	}
 
+	private void init() {
+		View.inflate(getContext(), R.layout.listen, this);
+
+		drawer = (SlidingDrawer) findViewById(R.id.drawer);
+		drawer.setOnDrawerOpenListener(this);
+		drawer.setOnDrawerCloseListener(this);
+		playButton = (ImageButton) findViewById(R.id.StreamPlayButton);
+		playButton.setEnabled(false);
+		playButton.setOnClickListener(this);
+		// streamButton = (ImageButton) findViewById(R.id.StreamShareButton);
+		// streamButton.setOnClickListener(this);
+		// streamButton.setEnabled(false);
+
+		Button playlistButton = (Button) findViewById(R.id.StreamPlaylistButton);
+		playlistButton.setOnClickListener(this);
+
+		progressBar = (SeekBar) findViewById(R.id.StreamProgressBar);
+		progressBar.setOnSeekBarChangeListener(this);
+		progressBar.setEnabled(false);
+
+		infoText = (TextView) findViewById(R.id.StreamTextView);
+
+		lengthText = (TextView) findViewById(R.id.StreamLengthText);
+		lengthText.setText("");
+
+		attachToPlaybackService();
+	}
+
+	protected void listen(PlaylistEntry entry) {
+		if (player != null) {
+			try {
+				addPlaylistItem(entry);
+				player.setCurrent(entry);
+				player.listen(entry.url, entry.isStream);
+			} catch (IllegalArgumentException e) {
+				Log.e(LOG_TAG, "", e);
+			} catch (IllegalStateException e) {
+				Log.e(LOG_TAG, "", e);
+			} catch (IOException e) {
+				Log.e(LOG_TAG, "", e);
+			}
+		}
+	}
+
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
 		init();
-	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
-		Log.d(LOG_TAG, "detached from window");
-		getContext().unregisterReceiver(changeReceiver);
-		getContext().unregisterReceiver(updateReceiver);
-		getContext().unregisterReceiver(closeReceiver);
-		getContext().getApplicationContext().unbindService(conn);
-		getContext().unregisterReceiver(remotePlayReceiver);
-	}
-
-	private void togglePlay() {
-		if (player.isPlaying()) {
-			player.pause();
-			playButton.setImageResource(android.R.drawable.ic_media_play);
-			playButtonisPause = false;
-		} else {
-			player.play();
-			playButton.setImageResource(android.R.drawable.ic_media_pause);
-			playButtonisPause = true;
-		}
 	}
 
 	@Override
@@ -183,102 +257,28 @@ public class ListenView extends FrameLayout implements OnClickListener,
 		}
 	}
 
-	protected void listen(PlaylistEntry entry) {
-		if (player != null) {
-			try {
-				addPlaylistItem(entry);
-				player.setCurrent(entry);
-				player.listen(entry.url, entry.isStream);
-			} catch (IllegalArgumentException e) {
-				Log.e(LOG_TAG, "", e);
-			} catch (IllegalStateException e) {
-				Log.e(LOG_TAG, "", e);
-			} catch (IOException e) {
-				Log.e(LOG_TAG, "", e);
-			}
-		}
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		Log.d(LOG_TAG, "detached from window");
+		getContext().unregisterReceiver(changeReceiver);
+		getContext().unregisterReceiver(updateReceiver);
+		getContext().unregisterReceiver(closeReceiver);
+		getContext().getApplicationContext().unbindService(conn);
+		getContext().unregisterReceiver(remotePlayReceiver);
 	}
 
-	protected void addToPlayList(List<PlaylistEntry> entries) {
-		for (PlaylistEntry entry : entries)
-			addPlaylistItem(entry);
+	@Override
+	public void onDrawerClosed() {
+		ImageView arrow = (ImageView) findViewById(R.id.DrawerArrowImage);
+		arrow.setImageDrawable(getResources().getDrawable(R.drawable.arrow_up));
 	}
 
-	private void addPlaylistItem(PlaylistEntry entry) {
-		ContentValues values = new ContentValues();
-		values.put(Items.NAME, entry.title);
-		values.put(Items.URL, entry.url);
-		values.put(Items.IS_PLAYING, false);
-		values.put(Items.PLAY_ORDER,
-				PlaylistProvider.getMax(this.getContext()) + 1);
-		values.put(Items.STORY_ID, entry.artist.getId());
-		Log.d(LOG_TAG, "Adding playlist item to db");
-		Uri insert = this.getContext().getContentResolver()
-				.insert(PlaylistProvider.CONTENT_URI, values);
-		entry.id = ContentUris.parseId(insert);
-	}
-
-	private class PlaybackChangeReceiver extends BroadcastReceiver {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String title = intent.getStringExtra(PlaybackService.EXTRA_TITLE);
-			infoText.setText(title);
-		}
-	}
-
-	private class PlaybackUpdateReceiver extends BroadcastReceiver {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			int duration = intent
-					.getIntExtra(PlaybackService.EXTRA_DURATION, 1);
-			int position = intent
-					.getIntExtra(PlaybackService.EXTRA_POSITION, 0);
-			int downloaded = intent.getIntExtra(
-					PlaybackService.EXTRA_DOWNLOADED, 1);
-			if (!playButtonisPause && player != null && player.isPlaying()) {
-				playButton.setImageResource(android.R.drawable.ic_media_pause);
-				playButtonisPause = true;
-			}
-			playButton.setEnabled(true);
-			progressBar.setEnabled(true);
-			progressBar.setMax(duration);
-			progressBar.setProgress(position);
-			progressBar.setSecondaryProgress(downloaded);
-		}
-	}
-
-	private class PlaybackCloseReceiver extends BroadcastReceiver {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			playButton.setEnabled(false);
-			playButton.setImageResource(android.R.drawable.ic_media_play);
-			progressBar.setEnabled(false);
-			progressBar.setProgress(0);
-			progressBar.setSecondaryProgress(0);
-			infoText.setText(null);
-		}
-	}
-
-	private class RemotePlayReceiver extends BroadcastReceiver {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			long id = intent.getLongExtra(Constants.EXTRA_TRACK_ID, -1);
-			String name = intent.getStringExtra(Constants.EXTRA_TRACK_NAME);
-			String url = intent.getStringExtra(Constants.EXTRA_TRACK_URL);
-			PlaylistEntry entry = new PlaylistEntry(id, url, name, true, -1);
-			if (player != null) {
-				try {
-					player.setCurrent(entry);
-					player.listen(entry.url, entry.isStream);
-				} catch (IllegalArgumentException e) {
-					Log.e(LOG_TAG, "", e);
-				} catch (IllegalStateException e) {
-					Log.e(LOG_TAG, "", e);
-				} catch (IOException e) {
-					Log.e(LOG_TAG, "", e);
-				}
-			}
-		}
+	@Override
+	public void onDrawerOpened() {
+		ImageView arrow = (ImageView) findViewById(R.id.DrawerArrowImage);
+		arrow.setImageDrawable(getResources()
+				.getDrawable(R.drawable.arrow_down));
 	}
 
 	@Override
@@ -302,16 +302,15 @@ public class ListenView extends FrameLayout implements OnClickListener,
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 
-	@Override
-	public void onDrawerOpened() {
-		ImageView arrow = (ImageView) findViewById(R.id.DrawerArrowImage);
-		arrow.setImageDrawable(getResources()
-				.getDrawable(R.drawable.arrow_down));
-	}
-
-	@Override
-	public void onDrawerClosed() {
-		ImageView arrow = (ImageView) findViewById(R.id.DrawerArrowImage);
-		arrow.setImageDrawable(getResources().getDrawable(R.drawable.arrow_up));
+	private void togglePlay() {
+		if (player.isPlaying()) {
+			player.pause();
+			playButton.setImageResource(android.R.drawable.ic_media_play);
+			playButtonisPause = false;
+		} else {
+			player.play();
+			playButton.setImageResource(android.R.drawable.ic_media_pause);
+			playButtonisPause = true;
+		}
 	}
 }

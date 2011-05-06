@@ -18,24 +18,24 @@ public class Genre {
 		this.genreNumber = genreNumber;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public ArrayList<Artist> getArtists(int page) {
+		return artists;
 	}
 
 	public int getGenreNumber() {
 		return genreNumber;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	public void setGenreNumber(int genreNumber) {
 		this.genreNumber = genreNumber;
 	}
 
-	public ArrayList<Artist> getArtists(int page) {
-		return artists;
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

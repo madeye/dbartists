@@ -14,7 +14,22 @@
 
 package org.dbartists;
 
-import android.util.Log;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.StringTokenizer;
 
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
@@ -46,275 +61,9 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.CharArrayBuffer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.StringTokenizer;
+import android.util.Log;
 
 public class StreamProxy implements Runnable {
-	private static final String LOG_TAG = StreamProxy.class.getName();
-	private static final String CACHE_BASE = "/sdcard/dbartists/";
-
-	private int port = 0;
-	private String title = "tmp";
-
-	public int getPort() {
-		return port;
-	}
-
-	private volatile boolean isRunning = true;
-	private ServerSocket socket;
-	private Thread thread;
-
-	public void init() {
-		try {
-			socket = new ServerSocket(port, 0,
-					InetAddress.getByAddress(new byte[] { 127, 0, 0, 1 }));
-			socket.setSoTimeout(5000);
-			port = socket.getLocalPort();
-			Log.d(LOG_TAG, "port " + port + " obtained");
-		} catch (UnknownHostException e) {
-			Log.e(LOG_TAG, "Error initializing server", e);
-		} catch (IOException e) {
-			Log.e(LOG_TAG, "Error initializing server", e);
-		}
-	}
-
-	public void start() {
-
-		if (socket == null) {
-			throw new IllegalStateException(
-					"Cannot start proxy; it has not been initialized.");
-		}
-
-		thread = new Thread(this);
-		thread.start();
-	}
-
-	public void stop() {
-		isRunning = false;
-
-		if (thread == null) {
-			throw new IllegalStateException(
-					"Cannot stop proxy; it has not been started.");
-		}
-
-		thread.interrupt();
-		try {
-			thread.join(5000);
-		} catch (InterruptedException e) {
-			Log.e(LOG_TAG, "join error");
-		}
-		
-		try {
-			socket.close();
-		} catch (IOException e) {
-			// Nothing
-		}
-	}
-	
-	public boolean getIsRunning() {
-		return isRunning;
-	}
-	
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	@Override
-	public void run() {
-		Log.d(LOG_TAG, "running");
-		while (isRunning) {
-			try {
-				Socket client = socket.accept();
-				if (client == null) {
-					continue;
-				}
-				Log.d(LOG_TAG, "client connected");
-				HttpRequest request = readRequest(client);
-				processRequest(request, client);
-			} catch (SocketTimeoutException e) {
-				// Do nothing
-			} catch (IOException e) {
-				Log.e(LOG_TAG, "Error connecting to client", e);
-			}
-		}
-		Log.d(LOG_TAG, "Proxy interrupted. Shutting down.");
-	}
-
-	private HttpRequest readRequest(Socket client) {
-		HttpRequest request = null;
-		InputStream is;
-		String firstLine;
-		try {
-			is = client.getInputStream();
-			BufferedReader reader = new BufferedReader(
-					new InputStreamReader(is));
-			firstLine = reader.readLine();
-		} catch (IOException e) {
-			Log.e(LOG_TAG, "Error parsing request", e);
-			return request;
-		}
-
-		if (firstLine == null) {
-			Log.i(LOG_TAG, "Proxy client closed connection without a request.");
-			return request;
-		}
-
-		StringTokenizer st = new StringTokenizer(firstLine);
-		String method = st.nextToken();
-		String uri = st.nextToken();
-		Log.d(LOG_TAG, uri);
-		String realUri = uri.substring(1);
-		Log.d(LOG_TAG, realUri);
-		request = new BasicHttpRequest(method, realUri);
-		return request;
-	}
-
-	private HttpResponse download(String url) {
-		DefaultHttpClient seed = new DefaultHttpClient();
-		SchemeRegistry registry = new SchemeRegistry();
-		registry.register(new Scheme("http", PlainSocketFactory
-				.getSocketFactory(), 80));
-		SingleClientConnManager mgr = new MyClientConnManager(seed.getParams(),
-				registry);
-		DefaultHttpClient http = new DefaultHttpClient(mgr, seed.getParams());
-		HttpGet method = new HttpGet(url);
-		HttpResponse response = null;
-		try {
-			Log.d(LOG_TAG, "starting download");
-			response = http.execute(method);
-			Log.d(LOG_TAG, "downloaded");
-		} catch (ClientProtocolException e) {
-			Log.e(LOG_TAG, "Error downloading", e);
-		} catch (IOException e) {
-			Log.e(LOG_TAG, "Error downloading", e);
-		}
-		return response;
-	}
-
-	private void processRequest(HttpRequest request, Socket client)
-			throws IllegalStateException, IOException {
-		if (request == null) {
-			return;
-		}
-		Log.d(LOG_TAG, "processing");
-		String url = request.getRequestLine().getUri();
-
-		String cache = getFileName(title);
-		File f = new File(cache);
-		if (!f.exists())
-			f.createNewFile();
-
-		HttpResponse realResponse = download(url);
-		if (realResponse == null) {
-			return;
-		}
-
-		Log.d(LOG_TAG, "downloading...");
-
-		InputStream data = realResponse.getEntity().getContent();
-		StatusLine line = realResponse.getStatusLine();
-		HttpResponse response = new BasicHttpResponse(line);
-		response.setHeaders(realResponse.getAllHeaders());
-
-		Log.d(LOG_TAG, "reading headers");
-		StringBuilder httpString = new StringBuilder();
-		httpString.append(response.getStatusLine().toString());
-
-		httpString.append("\n");
-		for (Header h : response.getAllHeaders()) {
-			httpString.append(h.getName()).append(": ").append(h.getValue())
-					.append("\n");
-		}
-		httpString.append("\n");
-		Log.d(LOG_TAG, "headers done");
-
-		OutputStream output = new FileOutputStream(cache);
-
-		try {
-			byte[] buffer = httpString.toString().getBytes();
-			int readBytes = -1;
-			Log.d(LOG_TAG, "writing to client");
-			client.getOutputStream().write(buffer, 0, buffer.length);
-
-			// Start streaming content.
-			byte[] buff = new byte[1024 * 100];
-			while (isRunning
-					&& (readBytes = data.read(buff, 0, buff.length)) != -1) {
-				client.getOutputStream().write(buff, 0, readBytes);
-				output.write(buff, 0, readBytes);
-				client.getOutputStream().flush();
-				output.flush();
-			}
-		} catch (Exception e) {
-			Log.e("", e.getMessage(), e);
-		} finally {
-			if (data != null) {
-				data.close();
-			}
-			if (output != null) {
-				output.close();
-			}
-			client.close();
-		}
-	}
-
-	public static String getFileName(String name) {
-		String file;
-		try {
-			file = MD5(name);
-		} catch (NoSuchAlgorithmException e) {
-			file = null;
-		} catch (UnsupportedEncodingException e) {
-			file = null;
-		}
-		if (file != null)
-			return CACHE_BASE + file + ".mp3";
-		else
-			return CACHE_BASE + "tmp.mp3";
-
-	}
-
-	private static String convertToHex(byte[] data) {
-		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < data.length; i++) {
-			int halfbyte = (data[i] >>> 4) & 0x0F;
-			int two_halfs = 0;
-			do {
-				if ((0 <= halfbyte) && (halfbyte <= 9))
-					buf.append((char) ('0' + halfbyte));
-				else
-					buf.append((char) ('a' + (halfbyte - 10)));
-				halfbyte = data[i] & 0x0F;
-			} while (two_halfs++ < 1);
-		}
-		return buf.toString();
-	}
-
-	public static String MD5(String text) throws NoSuchAlgorithmException,
-			UnsupportedEncodingException {
-		MessageDigest md;
-		md = MessageDigest.getInstance("MD5");
-		byte[] md5hash = new byte[32];
-		md.update(text.getBytes("UTF-8"), 0, text.length());
-		md5hash = md.digest();
-		return convertToHex(md5hash);
-	}
-
 	private class IcyLineParser extends BasicLineParser {
 		private static final String ICY_PROTOCOL_NAME = "ICY";
 
@@ -411,7 +160,6 @@ public class StreamProxy implements Runnable {
 			return superLine;
 		}
 	}
-
 	class MyClientConnection extends DefaultClientConnection {
 		@Override
 		protected HttpMessageParser createResponseParser(
@@ -433,7 +181,6 @@ public class StreamProxy implements Runnable {
 			return new MyClientConnection();
 		}
 	}
-
 	class MyClientConnManager extends SingleClientConnManager {
 		private MyClientConnManager(HttpParams params, SchemeRegistry schreg) {
 			super(params, schreg);
@@ -443,6 +190,258 @@ public class StreamProxy implements Runnable {
 		protected ClientConnectionOperator createConnectionOperator(
 				final SchemeRegistry sr) {
 			return new MyClientConnectionOperator(sr);
+		}
+	}
+
+	private static final String LOG_TAG = StreamProxy.class.getName();
+
+	private static final String CACHE_BASE = "/sdcard/dbartists/";
+	private static String convertToHex(byte[] data) {
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < data.length; i++) {
+			int halfbyte = (data[i] >>> 4) & 0x0F;
+			int two_halfs = 0;
+			do {
+				if ((0 <= halfbyte) && (halfbyte <= 9))
+					buf.append((char) ('0' + halfbyte));
+				else
+					buf.append((char) ('a' + (halfbyte - 10)));
+				halfbyte = data[i] & 0x0F;
+			} while (two_halfs++ < 1);
+		}
+		return buf.toString();
+	}
+	public static String getFileName(String name) {
+		String file;
+		try {
+			file = MD5(name);
+		} catch (NoSuchAlgorithmException e) {
+			file = null;
+		} catch (UnsupportedEncodingException e) {
+			file = null;
+		}
+		if (file != null)
+			return CACHE_BASE + file + ".mp3";
+		else
+			return CACHE_BASE + "tmp.mp3";
+
+	}
+
+	public static String MD5(String text) throws NoSuchAlgorithmException,
+			UnsupportedEncodingException {
+		MessageDigest md;
+		md = MessageDigest.getInstance("MD5");
+		byte[] md5hash = new byte[32];
+		md.update(text.getBytes("UTF-8"), 0, text.length());
+		md5hash = md.digest();
+		return convertToHex(md5hash);
+	}
+
+	private int port = 0;
+
+	private String title = "tmp";
+	
+	private volatile boolean isRunning = true;
+	
+	private ServerSocket socket;
+
+	private Thread thread;
+
+	private HttpResponse download(String url) {
+		DefaultHttpClient seed = new DefaultHttpClient();
+		SchemeRegistry registry = new SchemeRegistry();
+		registry.register(new Scheme("http", PlainSocketFactory
+				.getSocketFactory(), 80));
+		SingleClientConnManager mgr = new MyClientConnManager(seed.getParams(),
+				registry);
+		DefaultHttpClient http = new DefaultHttpClient(mgr, seed.getParams());
+		HttpGet method = new HttpGet(url);
+		HttpResponse response = null;
+		try {
+			Log.d(LOG_TAG, "starting download");
+			response = http.execute(method);
+			Log.d(LOG_TAG, "downloaded");
+		} catch (ClientProtocolException e) {
+			Log.e(LOG_TAG, "Error downloading", e);
+		} catch (IOException e) {
+			Log.e(LOG_TAG, "Error downloading", e);
+		}
+		return response;
+	}
+
+	public boolean getIsRunning() {
+		return isRunning;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void init() {
+		try {
+			socket = new ServerSocket(port, 0,
+					InetAddress.getByAddress(new byte[] { 127, 0, 0, 1 }));
+			socket.setSoTimeout(5000);
+			port = socket.getLocalPort();
+			Log.d(LOG_TAG, "port " + port + " obtained");
+		} catch (UnknownHostException e) {
+			Log.e(LOG_TAG, "Error initializing server", e);
+		} catch (IOException e) {
+			Log.e(LOG_TAG, "Error initializing server", e);
+		}
+	}
+
+	private void processRequest(HttpRequest request, Socket client)
+			throws IllegalStateException, IOException {
+		if (request == null) {
+			return;
+		}
+		Log.d(LOG_TAG, "processing");
+		String url = request.getRequestLine().getUri();
+
+		String cache = getFileName(title);
+		File f = new File(cache);
+		if (!f.exists())
+			f.createNewFile();
+
+		HttpResponse realResponse = download(url);
+		if (realResponse == null) {
+			return;
+		}
+
+		Log.d(LOG_TAG, "downloading...");
+
+		InputStream data = realResponse.getEntity().getContent();
+		StatusLine line = realResponse.getStatusLine();
+		HttpResponse response = new BasicHttpResponse(line);
+		response.setHeaders(realResponse.getAllHeaders());
+
+		Log.d(LOG_TAG, "reading headers");
+		StringBuilder httpString = new StringBuilder();
+		httpString.append(response.getStatusLine().toString());
+
+		httpString.append("\n");
+		for (Header h : response.getAllHeaders()) {
+			httpString.append(h.getName()).append(": ").append(h.getValue())
+					.append("\n");
+		}
+		httpString.append("\n");
+		Log.d(LOG_TAG, "headers done");
+
+		OutputStream output = new FileOutputStream(cache);
+
+		try {
+			byte[] buffer = httpString.toString().getBytes();
+			int readBytes = -1;
+			Log.d(LOG_TAG, "writing to client");
+			client.getOutputStream().write(buffer, 0, buffer.length);
+
+			// Start streaming content.
+			byte[] buff = new byte[1024 * 100];
+			while (isRunning
+					&& (readBytes = data.read(buff, 0, buff.length)) != -1) {
+				client.getOutputStream().write(buff, 0, readBytes);
+				output.write(buff, 0, readBytes);
+				client.getOutputStream().flush();
+				output.flush();
+			}
+		} catch (Exception e) {
+			Log.e("", e.getMessage(), e);
+		} finally {
+			if (data != null) {
+				data.close();
+			}
+			if (output != null) {
+				output.close();
+			}
+			client.close();
+		}
+	}
+
+	private HttpRequest readRequest(Socket client) {
+		HttpRequest request = null;
+		InputStream is;
+		String firstLine;
+		try {
+			is = client.getInputStream();
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(is));
+			firstLine = reader.readLine();
+		} catch (IOException e) {
+			Log.e(LOG_TAG, "Error parsing request", e);
+			return request;
+		}
+
+		if (firstLine == null) {
+			Log.i(LOG_TAG, "Proxy client closed connection without a request.");
+			return request;
+		}
+
+		StringTokenizer st = new StringTokenizer(firstLine);
+		String method = st.nextToken();
+		String uri = st.nextToken();
+		Log.d(LOG_TAG, uri);
+		String realUri = uri.substring(1);
+		Log.d(LOG_TAG, realUri);
+		request = new BasicHttpRequest(method, realUri);
+		return request;
+	}
+
+	@Override
+	public void run() {
+		Log.d(LOG_TAG, "running");
+		while (isRunning) {
+			try {
+				Socket client = socket.accept();
+				if (client == null) {
+					continue;
+				}
+				Log.d(LOG_TAG, "client connected");
+				HttpRequest request = readRequest(client);
+				processRequest(request, client);
+			} catch (SocketTimeoutException e) {
+				// Do nothing
+			} catch (IOException e) {
+				Log.e(LOG_TAG, "Error connecting to client", e);
+			}
+		}
+		Log.d(LOG_TAG, "Proxy interrupted. Shutting down.");
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void start() {
+
+		if (socket == null) {
+			throw new IllegalStateException(
+					"Cannot start proxy; it has not been initialized.");
+		}
+
+		thread = new Thread(this);
+		thread.start();
+	}
+
+	public void stop() {
+		isRunning = false;
+
+		if (thread == null) {
+			throw new IllegalStateException(
+					"Cannot stop proxy; it has not been started.");
+		}
+
+		thread.interrupt();
+		try {
+			thread.join(5000);
+		} catch (InterruptedException e) {
+			Log.e(LOG_TAG, "join error");
+		}
+		
+		try {
+			socket.close();
+		} catch (IOException e) {
+			// Nothing
 		}
 	}
 

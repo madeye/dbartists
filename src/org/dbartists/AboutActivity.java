@@ -14,27 +14,40 @@
 
 package org.dbartists;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Bundle;
-import android.text.Html;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.dbartists.utils.FileUtils;
+import android.app.Activity;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.text.Html;
+import android.widget.TextView;
 
 public class AboutActivity extends Activity {
 
+  private int getVersionCode() {
+    int version = -1;
+    try {
+      PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+      version = pi.versionCode;
+    } catch (PackageManager.NameNotFoundException e) {
+    }
+    return version;
+  }
+
+  private String getVersionName() {
+    String version = "";
+    try {
+      PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+      version = pi.versionName;
+    } catch (PackageManager.NameNotFoundException e) {
+      version = "Package name not found";
+    }
+    return version;
+  }
+  
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -61,26 +74,5 @@ public class AboutActivity extends Activity {
         .append("<b>").append(fieldValue).append("</b><br>");
     }
     view.setText(Html.fromHtml(sb.toString()));
-  }
-  
-  private String getVersionName() {
-    String version = "";
-    try {
-      PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
-      version = pi.versionName;
-    } catch (PackageManager.NameNotFoundException e) {
-      version = "Package name not found";
-    }
-    return version;
-  }
-
-  private int getVersionCode() {
-    int version = -1;
-    try {
-      PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
-      version = pi.versionCode;
-    } catch (PackageManager.NameNotFoundException e) {
-    }
-    return version;
   }
 }
