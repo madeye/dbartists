@@ -107,6 +107,7 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 			Log.d(LOG_TAG, "clicked on position " + position + ", id "
 					+ playlistId);
 		}
+		c.close();
 		// TODO: play audio
 		finish();
 	}

@@ -129,6 +129,7 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 			c.close();
 			return true;
 		}
+		c.close();
 		return false;
 	}
 

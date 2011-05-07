@@ -15,20 +15,20 @@
 			android:orientation="vertical" android:background="@color/white"
 			android:paddingLeft="8sp">
 			<TextView android:text="@string/msg_label_name" android:id="@+id/artistName"
-				android:textColor="@color/black" android:padding="2sp"
-				android:textSize="12sp" android:layout_width="fill_parent"
+				android:textColor="@color/black" android:padding="1sp"
+				android:textSize="14sp" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" />
 			<TextView android:text="@string/msg_label_genre" android:id="@+id/artistGnere"
-				android:textColor="@color/black" android:padding="2sp"
-				android:textSize="12sp" android:layout_width="fill_parent"
+				android:textColor="@color/black" android:padding="1sp"
+				android:textSize="14sp" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" />
 			<TextView android:text="@string/msg_label_member"
 				android:id="@+id/artistMember" android:textColor="@color/black"
-				android:padding="2sp" android:textSize="12sp" android:layout_width="fill_parent"
+				android:padding="1sp" android:textSize="14sp" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" />
 			<TextView android:text="@string/msg_label_company"
 				android:id="@+id/artistCompany" android:textColor="@color/black"
-				android:padding="2sp" android:textSize="12sp" android:layout_width="fill_parent"
+				android:padding="1sp" android:textSize="14sp" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" />
 		</LinearLayout>
 

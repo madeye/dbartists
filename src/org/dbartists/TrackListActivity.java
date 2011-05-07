@@ -181,9 +181,13 @@ public class TrackListActivity extends PlayerActivity implements
 		Cursor cursor = getContentResolver().query(
 				PlaylistProvider.CONTENT_URI, null, selection, selectionArgs,
 				sort);
-		if (cursor.moveToFirst())
+		if (cursor.moveToFirst()) {
+			cursor.close();
 			return true;
-		else
+		} else {
+			cursor.close();
 			return false;
+		}
+
 	}
 }
