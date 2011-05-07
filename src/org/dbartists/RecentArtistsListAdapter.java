@@ -47,6 +47,7 @@ public class RecentArtistsListAdapter extends ArrayAdapter<Artist> {
 	private LayoutInflater inflater;
 
 	private final static int MSG_ARTISTS_LOADED = 0;
+	private final static int MAX_RECENT_NUM = 20;
 
 	private ImageLoader dm;
 
@@ -100,13 +101,17 @@ public class RecentArtistsListAdapter extends ArrayAdapter<Artist> {
 			return;
 
 		moreArtists = new ArrayList<Artist>();
-
+		
+		int n = 0;
 		do {
+			if (n > MAX_RECENT_NUM)
+				break;
 			Artist art = new Artist(cursor.getString(cursor
 					.getColumnIndex(ArtistItems.NAME)), cursor.getString(cursor
 					.getColumnIndex(ArtistItems.IMAGE)),
 					cursor.getString(cursor.getColumnIndex(ArtistItems.URL)));
 			moreArtists.add(art);
+			n++;
 		} while (cursor.moveToNext());
 
 	}
