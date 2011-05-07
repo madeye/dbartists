@@ -113,6 +113,8 @@ public class RecentArtistsListAdapter extends ArrayAdapter<Artist> {
 			moreArtists.add(art);
 			n++;
 		} while (cursor.moveToNext());
+		
+		cursor.close();
 
 	}
 

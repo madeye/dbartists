@@ -112,6 +112,14 @@ public class TrackListActivity extends PlayerActivity implements
 		Log.d(TAG, "Adding artist item to db");
 		getContentResolver().insert(RecentArtistProvider.CONTENT_URI, values);
 	}
+	
+	private void deleteOldArtistItem() {
+		String selection = ArtistItems.URL + " = ?";
+		String [] selectionArgs = new String [1];
+		selectionArgs[0] = artistUrl;
+		Log.d(TAG, "Deleting artist item to db");
+		getContentResolver().delete(RecentArtistProvider.CONTENT_URI, selection, selectionArgs);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +127,7 @@ public class TrackListActivity extends PlayerActivity implements
 		artistUrl = getIntent().getStringExtra(Constants.EXTRA_ARTIST_URL);
 		artistImg = getIntent().getStringExtra(Constants.EXTRA_ARTIST_IMG);
 		
+		deleteOldArtistItem();
 		addRecentArtistItem();
 
 		super.onCreate(savedInstanceState);
