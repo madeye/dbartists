@@ -31,6 +31,7 @@
 	<string name="msg_main_subactivity_pop">本周流行音乐人</string>
 	<string name="msg_main_subactivity_genre">按流派检索</string>
 	<string name="msg_main_subactivity_search">搜索音乐人</string>
+	<string name="msg_main_subactivity_recent">最近浏览音乐人</string>
 	<string name="msg_main_subactivity_nowplaying">正在播放</string>
 
 	<string name="msg_main_menu_about">关于</string>

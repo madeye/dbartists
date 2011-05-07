@@ -167,11 +167,6 @@ public class PlaylistProvider extends ContentProvider {
         + Arrays.toString(selectionArgs));
     return result;
   }
-
-  public void reInstallDatabase () {
-	  SQLiteDatabase db = helper.getWritableDatabase();
-	  helper.dropTable(db);	  
-  }
   
   /**
    * For testing purposes, allows to override the existing helper so we don't

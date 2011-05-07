@@ -23,9 +23,15 @@ import org.dbartists.api.ArtistInfoFactory;
 import org.dbartists.api.Track;
 import org.dbartists.utils.PlaylistEntry;
 import org.dbartists.utils.PlaylistProvider;
+import org.dbartists.utils.PlaylistProvider.Items;
+import org.dbartists.utils.RecentArtistProvider;
+import org.dbartists.utils.RecentArtistProvider.ArtistItems;
 
 import android.app.Activity;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -97,11 +103,23 @@ public class TrackListActivity extends PlayerActivity implements
 		}
 	};
 
+	private void addRecentArtistItem() {
+		ContentValues values = new ContentValues();
+		values.put(ArtistItems.NAME, artistName);
+		values.put(ArtistItems.URL, artistUrl);
+		values.put(ArtistItems.IMAGE, artistImg);
+		values.put(ArtistItems.PLAY_ORDER, RecentArtistProvider.getMax(this) + 1);
+		Log.d(TAG, "Adding artist item to db");
+		getContentResolver().insert(RecentArtistProvider.CONTENT_URI, values);
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		artistName = getIntent().getStringExtra(Constants.EXTRA_ARTIST_NAME);
 		artistUrl = getIntent().getStringExtra(Constants.EXTRA_ARTIST_URL);
 		artistImg = getIntent().getStringExtra(Constants.EXTRA_ARTIST_IMG);
+		
+		addRecentArtistItem();
 
 		super.onCreate(savedInstanceState);
 
