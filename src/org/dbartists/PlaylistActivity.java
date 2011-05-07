@@ -46,7 +46,7 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 				ImageView image = (ImageView) view;
 				int isPlaying = cursor.getInt(columnIndex);
 				if (isPlaying == 0) {
-					image.setImageResource(R.drawable.icon);
+					image.setImageResource(R.drawable.icon_item);
 				} else {
 					image.setImageResource(R.drawable.icon_listen_main);
 				}

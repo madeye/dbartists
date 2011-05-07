@@ -101,7 +101,7 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 			if (isPlaying(track.getName()))
 				image.setImageResource(R.drawable.icon_listen_main);
 			else
-				image.setImageResource(R.drawable.icon);
+				image.setImageResource(R.drawable.icon_item);
 			image.setVisibility(View.VISIBLE);
 			name.setText(track.getName());
 		}
