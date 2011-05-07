@@ -100,14 +100,15 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 				.findViewById(R.id.artistItemImage);
 		final TextView name = (TextView) convertView
 				.findViewById(R.id.artimstItemName);
-
+		final ImageView arrow = (ImageView) convertView
+				.findViewById(R.id.arrow);
 
 		ProgressBar titleProgressBar;
-		titleProgressBar = (ProgressBar) parent.getRootView()
-				.findViewById(R.id.leadProgressBar);
+		titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
+				R.id.leadProgressBar);
 		// hide the progress bar if it is not needed
 		titleProgressBar.setVisibility(View.GONE);
-		
+
 		if (artist != null) {
 
 			image.setTag(artist.getImg());
@@ -118,8 +119,9 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 
 		} else {
 			// null marker means it's the end of the list.
-			image.setVisibility(View.INVISIBLE);
+			image.setVisibility(View.GONE);
 			name.setText(R.string.msg_load_more);
+			arrow.setVisibility(View.GONE);
 		}
 		return convertView;
 	}

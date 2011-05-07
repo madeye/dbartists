@@ -1,17 +1,35 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	android:gravity="center_vertical" android:minHeight="?android:attr/listPreferredItemHeight"
-	android:background="@color/selector">
-	<ImageView android:id="@+id/artistItemImage" android:src="@drawable/bullet"
-		android:layout_width="48sp" android:layout_height="48sp"
-		android:layout_gravity="center_vertical" android:scaleType="fitCenter"
-		android:layout_marginLeft="10dip" android:layout_centerVertical="true">
-	</ImageView>
-	<LinearLayout android:layout_width="fill_parent"
-		android:orientation="vertical" android:layout_height="wrap_content"
-		android:layout_margin="10dip">
-		<TextView android:textColor="@color/black" android:gravity="center_vertical"
-			android:id="@+id/artimstItemName" android:layout_height="48sp"
-			android:textSize="20sp" android:layout_width="fill_parent"></TextView>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:gravity="center_vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:background="@color/selector">
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:gravity="center_vertical" android:minHeight="?android:attr/listPreferredItemHeight"
+		android:background="@color/selector">
+		<ImageView android:id="@+id/artistItemImage" android:src="@drawable/bullet"
+			android:layout_width="48sp" android:layout_height="48sp"
+			android:layout_gravity="center_vertical" android:scaleType="fitCenter"
+			android:layout_marginLeft="10dip" android:layout_centerVertical="true">
+		</ImageView>
+		<LinearLayout android:layout_width="fill_parent"
+			android:orientation="vertical" android:layout_height="wrap_content"
+			android:layout_margin="10dip">
+			<TextView android:textColor="@color/black" android:gravity="center_vertical"
+				android:id="@+id/artimstItemName" android:layout_height="48sp"
+				android:textSize="20sp" android:layout_width="fill_parent"></TextView>
+		</LinearLayout>
 	</LinearLayout>
-</LinearLayout>
+	<LinearLayout android:id="@+id/list_inner"
+		android:orientation="horizontal" android:gravity="center_vertical"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_alignParentRight="true" android:layout_centerVertical="true">
+		<TextView android:id="@+id/list_count" android:textColor="@color/black"
+			android:textSize="20sp" android:gravity="center_vertical"
+			android:text="0" android:layout_width="wrap_content"
+			android:layout_marginRight="4dip" android:layout_height="fill_parent"
+			android:layout_alignParentRight="true" android:visibility="invisible" />
+		<ImageView android:id="@+id/arrow" android:gravity="center_vertical"
+			android:src="@drawable/arrow" android:layout_height="24dip"
+			android:layout_marginRight="12dip" android:layout_width="24dip"
+			android:scaleType="fitCenter" />
+	</LinearLayout>
+</RelativeLayout>

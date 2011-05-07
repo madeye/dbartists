@@ -10,5 +10,5 @@
 		android:layout_marginLeft="8dip" android:layout_height="wrap_content"
 		android:layout_width="fill_parent" android:layout_gravity="center_vertical"
 		android:textAppearance="?android:attr/textAppearanceMedium"
-		android:textColor="@color/black"></TextView>
+		android:layout_marginRight="8dip" android:textColor="@color/black"></TextView>
 </LinearLayout>
