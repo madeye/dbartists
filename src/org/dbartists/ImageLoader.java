@@ -53,7 +53,7 @@ public class ImageLoader {
 		final Paint paint = new Paint();
 		final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
 		final RectF rectF = new RectF(rect);
-		final float roundPx = 12;
+		final float roundPx = 8;
 
 		paint.setAntiAlias(true);
 		canvas.drawARGB(0, 0, 0, 0);
