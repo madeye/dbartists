@@ -38,7 +38,7 @@ public class ImageLoader {
 		@Override
 		public void run() {
 			if (bitmap != null)
-				imageView.setImageBitmap(getRoundedCornerBitmap(bitmap));
+				imageView.setImageBitmap(bitmap);
 			else
 				imageView.setImageResource(stub_id);
 		}
@@ -82,7 +82,7 @@ public class ImageLoader {
 						synchronized (photosQueue.photosToLoad) {
 							photoToLoad = photosQueue.photosToLoad.pop();
 						}
-						Bitmap bmp = getBitmap(photoToLoad.url);
+						Bitmap bmp = getRoundedCornerBitmap(getBitmap(photoToLoad.url));
 						cache.put(photoToLoad.url, bmp);
 						Object tag = photoToLoad.imageView.getTag();
 						if (tag != null
@@ -200,7 +200,7 @@ public class ImageLoader {
 
 	public void DisplayImage(String url, Activity activity, ImageView imageView) {
 		if (cache.containsKey(url))
-			imageView.setImageBitmap(getRoundedCornerBitmap(cache.get(url)));
+			imageView.setImageBitmap(cache.get(url));
 		else {
 			queuePhoto(url, activity, imageView);
 			imageView.setImageResource(stub_id);
