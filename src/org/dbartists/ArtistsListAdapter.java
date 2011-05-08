@@ -14,6 +14,7 @@
 
 package org.dbartists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.dbartists.api.Artist;
@@ -35,7 +36,6 @@ import android.widget.TextView;
 public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 	private static final String LOG_TAG = ArtistsListAdapter.class.getName();
 	private LayoutInflater inflater;
-	private static Typeface headlineTypeface = null;
 
 	private final static int MSG_ARTISTS_LOADED = 0;
 
@@ -68,6 +68,7 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 	public ArtistsListAdapter(Context context) {
 		super(context, R.layout.artist_item);
 		inflater = LayoutInflater.from(getContext());
+		moreArtists = new ArrayList<Artist>();
 		dm = new ImageLoader(context);
 	}
 
@@ -82,10 +83,13 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 	}
 
 	private void getMoreArtists(String url, int startId) {
-		moreArtists = ArtistFactory.downloadArtists(url, startId);
-		if (moreArtists == null || moreArtists.size() < 20) {
+		List<Artist> downloadArtists = ArtistFactory.downloadArtists(url,
+				startId);
+		if (downloadArtists == null || downloadArtists.size() < 20) {
 			endReached = true;
 		}
+		if (downloadArtists != null)
+			moreArtists.addAll(downloadArtists);
 	}
 
 	@Override
@@ -112,6 +116,8 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 		if (artist != null) {
 
 			image.setTag(artist.getImg());
+			image.setVisibility(View.VISIBLE);
+			arrow.setVisibility(View.VISIBLE);
 			dm.DisplayImage(artist.getImg(),
 					(Activity) convertView.getContext(), image);
 
@@ -119,7 +125,8 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 
 		} else {
 			// null marker means it's the end of the list.
-			image.setVisibility(View.GONE);
+			image.setTag("null");
+			image.setVisibility(View.INVISIBLE);
 			name.setText(R.string.msg_load_more);
 			arrow.setVisibility(View.GONE);
 		}
