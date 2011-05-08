@@ -6,7 +6,7 @@
 	<LinearLayout android:id="@+id/LinearLayout02"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
 		android:orientation="horizontal" android:background="@color/white"
-		android:paddingLeft="8sp">
+		android:paddingLeft="8dip" android:layout_marginTop="4dip">
 		<ImageView android:layout_width="72sp" android:src="@drawable/stub"
 			android:layout_gravity="center_vertical" android:id="@+id/artistImage"
 			android:layout_height="72sp" android:scaleType="fitCenter" />
