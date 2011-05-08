@@ -104,6 +104,7 @@ public class SearchArtistsListAdapter extends ArrayAdapter<Artist> {
 		if (artist != null) {
 
 			image.setTag(artist.getImg());
+			image.setVisibility(View.VISIBLE);
 			dm.DisplayImage(artist.getImg(),
 					(Activity) convertView.getContext(), image);
 
