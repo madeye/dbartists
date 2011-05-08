@@ -96,21 +96,21 @@ public class TrackListActivity extends PlayerActivity implements
 			else
 				name.setText(getString(R.string.msg_label_name)
 						+ artistInfo.getName());
-			
+
 			if (artistInfo.getGenre() == null
 					|| artistInfo.getGenre().equals(""))
 				genre.setVisibility(View.GONE);
 			else
 				genre.setText(getString(R.string.msg_label_genre)
 						+ artistInfo.getGenre());
-			
+
 			if (artistInfo.getMember() == null
 					|| artistInfo.getMember().equals(""))
 				member.setVisibility(View.GONE);
 			else
 				member.setText(getString(R.string.msg_label_member)
 						+ artistInfo.getMember());
-			
+
 			if (artistInfo.getCompany() == null
 					|| artistInfo.getCompany().equals(""))
 				company.setVisibility(View.GONE);
@@ -178,7 +178,8 @@ public class TrackListActivity extends PlayerActivity implements
 				artistInfo = ArtistInfoFactory
 						.downloadArtist(Constants.ARTIST_INFO_API_URL + "?url="
 								+ artistUrl);
-				handler.sendEmptyMessage(0);
+				if (artistInfo != null)
+					handler.sendEmptyMessage(0);
 			}
 		}.start();
 	}

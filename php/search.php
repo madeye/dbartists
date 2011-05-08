@@ -1,9 +1,13 @@
 <?php
 
+$cookie_jar_index = 'cookie.txt';
+
 $url = "http://www.douban.com/search?cat=2002&search_text=".urlencode(urldecode($_REQUEST['p']));
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_HEADER, 1);
+curl_setopt($ch, CURLOPT_HEADER, 0);
+curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_jar_index);
+curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_jar_index);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 $content = curl_exec($ch);
 curl_close($ch);

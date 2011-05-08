@@ -1,11 +1,15 @@
 <?php
 
+$cookie_jar_index = 'cookie.txt';
+
 $genre = $_REQUEST['g'];
 $page = $_REQUEST['p'];
 $url = "http://music.douban.com/artists/genre_page/".$genre."/".$page;
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_HEADER, 1);
+curl_setopt($ch, CURLOPT_HEADER, 0);
+curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_jar_index);
+curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie_jar_index);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 $content = curl_exec($ch);
 curl_close($ch);
