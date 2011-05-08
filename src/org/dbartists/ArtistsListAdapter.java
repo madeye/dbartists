@@ -50,13 +50,18 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 			switch (msg.what) {
 			case MSG_ARTISTS_LOADED:
 				if (moreArtists != null) {
-					remove(null);
-					for (Artist t : moreArtists) {
-						if (getPosition(t) < 0) {
-							add(t);
+					if (moreArtists.size() > 0) {
+						remove(null);
+						for (Artist t : moreArtists) {
+							if (getPosition(t) < 0) {
+								add(t);
+							}
 						}
-					}
-					if (!endReached) {
+						if (!endReached) {
+							add(null);
+						}
+					} else {
+						clear();
 						add(null);
 					}
 				}

@@ -83,11 +83,15 @@ public class TopArtistsListActivity extends PlayerActivity implements
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		Artist s = (Artist) parent.getAdapter().getItem(position);
-		Intent i = new Intent(this, TrackListActivity.class);
-		i.putExtra(Constants.EXTRA_ARTIST_NAME, s.getName());
-		i.putExtra(Constants.EXTRA_ARTIST_IMG, s.getImg());
-		i.putExtra(Constants.EXTRA_ARTIST_URL, s.getUrl());
-		startActivityWithoutAnimation(i);
+		if (s == null) {
+			addArtists();
+		} else {
+			Intent i = new Intent(this, TrackListActivity.class);
+			i.putExtra(Constants.EXTRA_ARTIST_NAME, s.getName());
+			i.putExtra(Constants.EXTRA_ARTIST_IMG, s.getImg());
+			i.putExtra(Constants.EXTRA_ARTIST_URL, s.getUrl());
+			startActivityWithoutAnimation(i);
+		}
 	}
 
 	@Override

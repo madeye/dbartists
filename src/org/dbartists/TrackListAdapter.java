@@ -43,15 +43,21 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 		@Override
 		public void handleMessage(Message msg) {
 			if (moreTracks != null) {
-				for (Track s : moreTracks) {
-					if (getPosition(s) < 0) {
-						add(s);
+				if (moreTracks.size() > 0) {
+					remove(null);
+					for (Track s : moreTracks) {
+						if (getPosition(s) < 0) {
+							add(s);
+						}
 					}
+				} else {
+					clear();
+					add(null);
 				}
 			}
 		}
 	};
-	
+
 	public TrackListAdapter(Context context) {
 		super(context, R.layout.track_item);
 		inflater = LayoutInflater.from(getContext());
@@ -104,6 +110,10 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 				image.setImageResource(R.drawable.icon_item);
 			image.setVisibility(View.VISIBLE);
 			name.setText(track.getName());
+		} else {
+			image.setTag("null");
+			image.setVisibility(View.INVISIBLE);
+			name.setText(R.string.msg_alert_load_failed);
 		}
 		return convertView;
 	}

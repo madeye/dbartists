@@ -64,6 +64,7 @@
 		基于豆瓣的API提供了在线试听功能。所有音乐版权归原作者所有。
 	</string>
 
+	<string name="msg_alert_load_failed">加载失败，请重试…</string>
 	<string name="msg_error">Error</string>
 	<string name="msg_ignore">忽略</string>
 	<string name="msg_yes">是</string>

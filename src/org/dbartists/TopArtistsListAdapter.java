@@ -47,10 +47,15 @@ public class TopArtistsListAdapter extends ArrayAdapter<Artist> {
 			switch (msg.what) {
 			case MSG_ARTISTS_LOADED:
 				if (moreArtists != null) {
-					for (Artist t : moreArtists) {
-						if (getPosition(t) < 0) {
-							add(t);
+					if (moreArtists.size() > 0) {
+						for (Artist t : moreArtists) {
+							if (getPosition(t) < 0) {
+								add(t);
+							}
 						}
+					} else {
+						clear();
+						add(null);
 					}
 				}
 				break;
@@ -90,10 +95,12 @@ public class TopArtistsListAdapter extends ArrayAdapter<Artist> {
 				.findViewById(R.id.artistItemImage);
 		final TextView name = (TextView) convertView
 				.findViewById(R.id.artimstItemName);
-		
+		final ImageView arrow = (ImageView) convertView
+				.findViewById(R.id.arrow);
+
 		ProgressBar titleProgressBar;
-		titleProgressBar = (ProgressBar) parent.getRootView()
-				.findViewById(R.id.leadProgressBar);
+		titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
+				R.id.leadProgressBar);
 		// hide the progress bar if it is not needed
 		titleProgressBar.setVisibility(View.GONE);
 
@@ -105,6 +112,12 @@ public class TopArtistsListAdapter extends ArrayAdapter<Artist> {
 
 			name.setText(artist.getName());
 
+		} else {
+			// null marker means it's the end of the list.
+			image.setTag("null");
+			image.setVisibility(View.INVISIBLE);
+			name.setText(R.string.msg_load_more);
+			arrow.setVisibility(View.GONE);
 		}
 		return convertView;
 	}

@@ -91,14 +91,32 @@ public class TrackListActivity extends PlayerActivity implements
 			TextView member = (TextView) findViewById(R.id.artistMember);
 			TextView company = (TextView) findViewById(R.id.artistCompany);
 
-			name.setText(getString(R.string.msg_label_name)
-					+ artistInfo.getName());
-			genre.setText(getString(R.string.msg_label_genre)
-					+ artistInfo.getGenre());
-			member.setText(getString(R.string.msg_label_member)
-					+ artistInfo.getMember());
-			company.setText(getString(R.string.msg_label_company)
-					+ artistInfo.getCompany());
+			if (artistInfo.getName() == null || artistInfo.getName().equals(""))
+				name.setVisibility(View.GONE);
+			else
+				name.setText(getString(R.string.msg_label_name)
+						+ artistInfo.getName());
+			
+			if (artistInfo.getGenre() == null
+					|| artistInfo.getGenre().equals(""))
+				genre.setVisibility(View.GONE);
+			else
+				genre.setText(getString(R.string.msg_label_genre)
+						+ artistInfo.getGenre());
+			
+			if (artistInfo.getMember() == null
+					|| artistInfo.getMember().equals(""))
+				member.setVisibility(View.GONE);
+			else
+				member.setText(getString(R.string.msg_label_member)
+						+ artistInfo.getMember());
+			
+			if (artistInfo.getCompany() == null
+					|| artistInfo.getCompany().equals(""))
+				company.setVisibility(View.GONE);
+			else
+				company.setText(getString(R.string.msg_label_company)
+						+ artistInfo.getCompany());
 
 		}
 	};
@@ -108,17 +126,19 @@ public class TrackListActivity extends PlayerActivity implements
 		values.put(ArtistItems.NAME, artistName);
 		values.put(ArtistItems.URL, artistUrl);
 		values.put(ArtistItems.IMAGE, artistImg);
-		values.put(ArtistItems.PLAY_ORDER, RecentArtistProvider.getMax(this) + 1);
+		values.put(ArtistItems.PLAY_ORDER,
+				RecentArtistProvider.getMax(this) + 1);
 		Log.d(TAG, "Adding artist item to db");
 		getContentResolver().insert(RecentArtistProvider.CONTENT_URI, values);
 	}
-	
+
 	private void deleteOldArtistItem() {
 		String selection = ArtistItems.URL + " = ?";
-		String [] selectionArgs = new String [1];
+		String[] selectionArgs = new String[1];
 		selectionArgs[0] = artistUrl;
 		Log.d(TAG, "Deleting artist item to db");
-		getContentResolver().delete(RecentArtistProvider.CONTENT_URI, selection, selectionArgs);
+		getContentResolver().delete(RecentArtistProvider.CONTENT_URI,
+				selection, selectionArgs);
 	}
 
 	@Override
@@ -126,7 +146,7 @@ public class TrackListActivity extends PlayerActivity implements
 		artistName = getIntent().getStringExtra(Constants.EXTRA_ARTIST_NAME);
 		artistUrl = getIntent().getStringExtra(Constants.EXTRA_ARTIST_URL);
 		artistImg = getIntent().getStringExtra(Constants.EXTRA_ARTIST_IMG);
-		
+
 		deleteOldArtistItem();
 		addRecentArtistItem();
 
@@ -146,6 +166,12 @@ public class TrackListActivity extends PlayerActivity implements
 		image.setTag(artistImg);
 		dm.DisplayImage(artistImg, this, image);
 
+		addArtistInfo();
+
+		addTracks();
+	}
+
+	private void addArtistInfo() {
 		new Thread() {
 			@Override
 			public void run() {
@@ -155,15 +181,16 @@ public class TrackListActivity extends PlayerActivity implements
 				handler.sendEmptyMessage(0);
 			}
 		}.start();
-
-		addTracks();
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		Track s = (Track) parent.getAdapter().getItem(position);
-		playTrack(s, true);
+		if (s != null)
+			playTrack(s, true);
+		else
+			refresh();
 	}
 
 	private void playTrack(Track track, boolean playNow) {
@@ -201,6 +228,7 @@ public class TrackListActivity extends PlayerActivity implements
 	public void refresh() {
 		listAdapter.clear();
 		addTracks();
+		addArtistInfo();
 	}
 
 	private boolean retrievePlaylistItem(String selection,
