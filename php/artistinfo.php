@@ -1,7 +1,12 @@
 <?php
 $url = $_REQUEST['url'];
-$f = new SaeFetchurl();
-$content = $f->fetch($url);
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_HEADER, 1);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+$content = curl_exec($ch);
+curl_close($ch);
+
 if ($content != false) {
 
     // artist
@@ -13,6 +18,7 @@ if ($content != false) {
     $match = preg_replace('/的小站/', '', $match);
     $match = preg_replace('@</title>@', '', $match);
     $match = preg_replace('@[\r\n]*@', '', $match);
+	$match = preg_replace('/&amp;/', '&', $match);
     echo trim($match)."\n";
 
 

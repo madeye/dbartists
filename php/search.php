@@ -1,8 +1,12 @@
 <?php
 
 $url = "http://www.douban.com/search?cat=2002&search_text=".urlencode(urldecode($_REQUEST['p']));
-$f = new SaeFetchurl();
-$content = $f->fetch($url);
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_HEADER, 1);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+$content = curl_exec($ch);
+curl_close($ch);
 
 if ($content != false) {
 
@@ -21,6 +25,7 @@ if ($content != false) {
         preg_match('/(title=")[\s\S]+?(")/', $match, $name);
         $name = preg_replace('/title="/', '', $name[0]);
         $name = preg_replace('/"/', '', $name);
+		$name = preg_replace('/&amp;/', '&', $name);
         echo $name."\n";
 
         // artist pic
