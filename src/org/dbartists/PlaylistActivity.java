@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -33,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class PlaylistActivity extends Activity implements OnClickListener,
 		OnItemClickListener {
@@ -82,9 +84,14 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
+		// Remove title bar
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		super.onCreate(savedInstanceState);
+		
 		setContentView(R.layout.playlist);
-		Button clearButton = (Button) findViewById(R.id.PlaylistClear);
+		TextView clearButton = (TextView) findViewById(R.id.PlaylistClear);
 		clearButton.setOnClickListener(this);
 
 		refreshList();

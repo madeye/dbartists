@@ -41,6 +41,7 @@ import android.media.MediaPlayer.OnInfoListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -88,6 +89,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private int lastBufferPercent = 0;
 
 	private Thread updateProgressThread;
+	
+	private MusicDownloader md;
 
 	// Amount of time to rewind playback when resuming after call
 	private final static int RESUME_REWIND_TIME = 3000;
@@ -104,11 +107,20 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			File f = new File(StreamProxy.getFileName(title));
 
 			Log.d(LOG_TAG, "title: " + title + " remote size: " + file_size);
+			
+		    // From 2.2 on (SDK ver 8), the local mediaplayer can handle Shoutcast
+		    // streams natively. Let's detect that, and not proxy.
+		    Log.d(LOG_TAG, "SDK Version " + Build.VERSION.SDK);
+		    int sdkVersion = 0;
+		    try {
+		      sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+		    } catch (NumberFormatException e) {
+		    }
 
-			if (f.exists() && Math.abs(f.length() - file_size) < 100 * 1024) {
+			if (f.exists() && file_size != -1 && Math.abs(f.length() - file_size) < 100 * 1024) {
 				url = f.getAbsolutePath();
 				stream = false;
-			} else {
+			} else if (sdkVersion < 8){
 				if (proxy == null) {
 					proxy = new StreamProxy();
 					proxy.init();
@@ -120,6 +132,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 						proxy.getPort(), url);
 				url = proxyUrl;
 				stream = true;
+			
+			} else {
+				stream = true;
+				md.download(url, f.getAbsolutePath());
 			}
 
 			synchronized (this) {
@@ -375,6 +391,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 		// Register the listener with the telephony manager.
 		telephonyManager.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
+		
+		md = new MusicDownloader(this);
 	}
 
 	@Override
