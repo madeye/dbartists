@@ -3,3 +3,7 @@ syntax: regexp
 ^proguard$
 syntax: regexp
 ^gen$
+syntax: glob
+bin\*
+syntax: regexp
+bin/*
