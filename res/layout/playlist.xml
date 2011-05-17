@@ -19,9 +19,11 @@
 		android:orientation="horizontal" android:layout_alignParentBottom="true"
 		android:layout_margin="10dp" android:color="@android:color/transparent">
 		<TextView android:text="@string/msg_playlist_clear"
-			android:id="@+id/PlaylistClear" android:padding="4dp"
-			android:textColor="@color/button_text_selector" android:textSize="18sp"
-			android:layout_width="wrap_content" android:background="@drawable/button_selector"
-			android:layout_height="wrap_content" android:layout_centerInParent="true"></TextView>
+			android:id="@+id/PlaylistClear" android:paddingLeft="10dp"
+			android:paddingRight="10dp" android:paddingTop="5dp"
+			android:paddingBottom="5dp" android:textColor="@color/button_text_selector"
+			android:textSize="18sp" android:layout_width="wrap_content"
+			android:background="@drawable/button_selector" android:layout_height="wrap_content"
+			android:layout_centerInParent="true"></TextView>
 	</RelativeLayout>
 </LinearLayout>
