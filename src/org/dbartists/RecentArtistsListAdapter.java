@@ -73,7 +73,7 @@ public class RecentArtistsListAdapter extends ArrayAdapter<Artist> {
 	public RecentArtistsListAdapter(Context context) {
 		super(context, R.layout.artist_item);
 		inflater = LayoutInflater.from(getContext());
-		dm = new ImageLoader(context);
+		dm = ImageLoaderFactory.getImageLoader(context);
 	}
 
 	public void addMoreArtists() {

@@ -74,7 +74,7 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 		super(context, R.layout.artist_item);
 		inflater = LayoutInflater.from(getContext());
 		moreArtists = new ArrayList<Artist>();
-		dm = new ImageLoader(context);
+		dm = ImageLoaderFactory.getImageLoader(context);
 	}
 
 	public void addMoreArtists(final String url, final int startId) {

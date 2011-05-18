@@ -408,6 +408,8 @@ public class PlaybackService extends Service implements OnPreparedListener,
 				Log.e(LOG_TAG, "", e);
 			}
 		}
+		
+		md.stopThread();
 
 		stop();
 		synchronized (this) {

@@ -152,7 +152,7 @@ public class TrackListActivity extends PlayerActivity implements
 
 		super.onCreate(savedInstanceState);
 
-		dm = new ImageLoader(this);
+		dm = ImageLoaderFactory.getImageLoader(this);;
 
 		ViewGroup container = (ViewGroup) findViewById(R.id.Content);
 		View.inflate(this, R.layout.items, container);
