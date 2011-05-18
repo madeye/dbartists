@@ -95,6 +95,7 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 		setContentView(R.layout.playlist);
 		TextView clearButton = (TextView) findViewById(R.id.PlaylistClear);
 		clearButton.setOnClickListener(this);
+		
 
 		refreshList();
 	}
@@ -148,5 +149,6 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 		ListView listView = (ListView) findViewById(R.id.ListView01);
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(this);
+		listView.setOnItemLongClickListener(this);
 	}
 }
