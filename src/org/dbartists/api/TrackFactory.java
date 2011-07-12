@@ -22,6 +22,8 @@ public class TrackFactory {
 		try {
 			URL aURL = new URL(url);
 			HttpURLConnection conn = (HttpURLConnection) aURL.openConnection();
+			conn.setConnectTimeout(3000);
+			conn.setReadTimeout(5000);
 			conn.connect();
 			InputStream is = conn.getInputStream();
 			BufferedReader reader = new BufferedReader(
