@@ -73,6 +73,8 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 
 	private final static int MSG_ARTISTS_LOADED = 0;
 
+	private boolean finish = false;
+
 	private ImageLoader dm;
 
 	private List<Artist> moreArtists;
@@ -131,43 +133,57 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 			moreArtists.addAll(downloadArtists);
 	}
 
+	static class ViewHolder {
+		ImageView image;
+		TextView name;
+		ImageView arrow;
+	}
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+
+		ViewHolder holder;
+
 		if (convertView == null) {
+			holder = new ViewHolder();
 			convertView = inflater.inflate(R.layout.artist_item, parent, false);
+			holder.image = (ImageView) convertView
+					.findViewById(R.id.artistItemImage);
+			holder.name = (TextView) convertView
+					.findViewById(R.id.artimstItemName);
+			holder.arrow = (ImageView) convertView.findViewById(R.id.arrow);
+			convertView.setTag(holder);
+		} else {
+			holder = (ViewHolder) convertView.getTag();
 		}
 
 		final Artist artist = getItem(position);
 
-		final ImageView image = (ImageView) convertView
-				.findViewById(R.id.artistItemImage);
-		final TextView name = (TextView) convertView
-				.findViewById(R.id.artimstItemName);
-		final ImageView arrow = (ImageView) convertView
-				.findViewById(R.id.arrow);
-
-		ProgressBar titleProgressBar;
-		titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
-				R.id.leadProgressBar);
-		// hide the progress bar if it is not needed
-		titleProgressBar.setVisibility(View.GONE);
+		if (!finish) {
+			ProgressBar titleProgressBar;
+			titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
+					R.id.leadProgressBar);
+			// hide the progress bar if it is not needed
+			titleProgressBar.setVisibility(View.GONE);
+			finish = true;
+		}
 
 		if (artist != null) {
 
-			image.setTag(artist.getImg());
-			image.setVisibility(View.VISIBLE);
-			arrow.setVisibility(View.VISIBLE);
+			holder.image.setTag(artist.getImg());
+			holder.image.setVisibility(View.VISIBLE);
+			holder.arrow.setVisibility(View.VISIBLE);
 			dm.DisplayImage(artist.getImg(),
-					(Activity) convertView.getContext(), image);
+					(Activity) convertView.getContext(), holder.image);
 
-			name.setText(artist.getName());
+			holder.name.setText(artist.getName());
 
 		} else {
 			// null marker means it's the end of the list.
-			image.setTag("null");
-			image.setVisibility(View.INVISIBLE);
-			name.setText(R.string.msg_load_more);
-			arrow.setVisibility(View.GONE);
+			holder.image.setTag("null");
+			holder.image.setVisibility(View.INVISIBLE);
+			holder.name.setText(R.string.msg_load_more);
+			holder.arrow.setVisibility(View.GONE);
 		}
 		return convertView;
 	}

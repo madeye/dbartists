@@ -51,6 +51,7 @@ package org.dbartists;
 
 import java.util.List;
 
+import org.dbartists.ArtistsListAdapter.ViewHolder;
 import org.dbartists.api.Artist;
 import org.dbartists.api.ArtistFactory;
 
@@ -117,21 +118,31 @@ public class TopArtistsListAdapter extends ArrayAdapter<Artist> {
 	private void getMoreArtists(String url, int startId) {
 		moreArtists = ArtistFactory.downloadArtists(url, startId);
 	}
+	
+	static class ViewHolder {
+		ImageView image;
+		TextView name;
+		ImageView arrow;
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		ViewHolder holder;
+
 		if (convertView == null) {
+			holder = new ViewHolder();
 			convertView = inflater.inflate(R.layout.artist_item, parent, false);
+			holder.image = (ImageView) convertView
+					.findViewById(R.id.artistItemImage);
+			holder.name = (TextView) convertView
+					.findViewById(R.id.artimstItemName);
+			holder.arrow = (ImageView) convertView.findViewById(R.id.arrow);
+			convertView.setTag(holder);
+		} else {
+			holder = (ViewHolder) convertView.getTag();
 		}
 
 		final Artist artist = getItem(position);
-
-		final ImageView image = (ImageView) convertView
-				.findViewById(R.id.artistItemImage);
-		final TextView name = (TextView) convertView
-				.findViewById(R.id.artimstItemName);
-		final ImageView arrow = (ImageView) convertView
-				.findViewById(R.id.arrow);
 
 		ProgressBar titleProgressBar;
 		titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
@@ -141,18 +152,18 @@ public class TopArtistsListAdapter extends ArrayAdapter<Artist> {
 
 		if (artist != null) {
 
-			image.setTag(artist.getImg());
+			holder.image.setTag(artist.getImg());
 			dm.DisplayImage(artist.getImg(),
-					(Activity) convertView.getContext(), image);
+					(Activity) convertView.getContext(), holder.image);
 
-			name.setText(artist.getName());
+			holder.name.setText(artist.getName());
 
 		} else {
 			// null marker means it's the end of the list.
-			image.setTag("null");
-			image.setVisibility(View.INVISIBLE);
-			name.setText(R.string.msg_load_more);
-			arrow.setVisibility(View.GONE);
+			holder.image.setTag("null");
+			holder.image.setVisibility(View.INVISIBLE);
+			holder.name.setText(R.string.msg_load_more);
+			holder.arrow.setVisibility(View.GONE);
 		}
 		return convertView;
 	}

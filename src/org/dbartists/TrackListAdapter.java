@@ -73,6 +73,7 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 	private LayoutInflater inflater;
 
 	private List<Track> moreTracks;
+	private boolean finish = false;
 
 	private Handler handler = new Handler() {
 		@Override
@@ -116,39 +117,53 @@ public class TrackListAdapter extends ArrayAdapter<Track> {
 		return moreTracks;
 	}
 
+	static class ViewHolder {
+		ImageView image;
+		TextView name;
+	}
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+
+		ViewHolder holder;
+
 		if (convertView == null) {
+			holder = new ViewHolder();
 			convertView = inflater.inflate(R.layout.track_item, parent, false);
+			holder.image = (ImageView) convertView
+					.findViewById(R.id.TrackItemStatusImage);
+			holder.name = (TextView) convertView
+					.findViewById(R.id.TrackItemNameText);
+			convertView.setTag(holder);
+		} else {
+			holder = (ViewHolder) convertView.getTag();
 		}
 
 		Track track = getItem(position);
 
-		ImageView image = (ImageView) convertView
-				.findViewById(R.id.TrackItemStatusImage);
-		TextView name = (TextView) convertView
-				.findViewById(R.id.TrackItemNameText);
-
-		ProgressBar titleProgressBar;
-		titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
-				R.id.leadProgressBar);
-		// hide the progress bar if it is not needed
-		titleProgressBar.setVisibility(View.GONE);
+		if (!finish) {
+			ProgressBar titleProgressBar;
+			titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
+					R.id.leadProgressBar);
+			// hide the progress bar if it is not needed
+			titleProgressBar.setVisibility(View.GONE);
+			finish = true;
+		}
 
 		if (track != null) {
 			// image.setImageDrawable(getContext().getResources().getDrawable(
 			// isPlayable(story) ? R.drawable.icon_listen_main
 			// : R.drawable.bullet));
 			if (isPlaying(track.getName()))
-				image.setImageResource(R.drawable.icon_listen_main);
+				holder.image.setImageResource(R.drawable.icon_listen_main);
 			else
-				image.setImageResource(R.drawable.icon_item);
-			image.setVisibility(View.VISIBLE);
-			name.setText(track.getName());
+				holder.image.setImageResource(R.drawable.icon_item);
+			holder.image.setVisibility(View.VISIBLE);
+			holder.name.setText(track.getName());
 		} else {
-			image.setTag("null");
-			image.setVisibility(View.INVISIBLE);
-			name.setText(R.string.msg_alert_load_failed);
+			holder.image.setTag("null");
+			holder.image.setVisibility(View.INVISIBLE);
+			holder.name.setText(R.string.msg_alert_load_failed);
 		}
 		return convertView;
 	}

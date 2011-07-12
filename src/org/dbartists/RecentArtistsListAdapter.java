@@ -52,6 +52,7 @@ package org.dbartists;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dbartists.ArtistsListAdapter.ViewHolder;
 import org.dbartists.PlaylistActivity.MySimpleCursorAdapter;
 import org.dbartists.api.Artist;
 import org.dbartists.api.ArtistFactory;
@@ -83,6 +84,7 @@ public class RecentArtistsListAdapter extends ArrayAdapter<Artist> {
 
 	private final static int MSG_ARTISTS_LOADED = 0;
 	private final static int MAX_RECENT_NUM = 20;
+	private boolean finish = false;
 
 	private ImageLoader dm;
 
@@ -136,7 +138,7 @@ public class RecentArtistsListAdapter extends ArrayAdapter<Artist> {
 			return;
 
 		moreArtists = new ArrayList<Artist>();
-		
+
 		int n = 0;
 		do {
 			if (n > MAX_RECENT_NUM)
@@ -148,37 +150,50 @@ public class RecentArtistsListAdapter extends ArrayAdapter<Artist> {
 			moreArtists.add(art);
 			n++;
 		} while (cursor.moveToNext());
-		
+
 		cursor.close();
 
 	}
 
+	static class ViewHolder {
+		ImageView image;
+		TextView name;
+	}
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		ViewHolder holder;
+
 		if (convertView == null) {
+			holder = new ViewHolder();
 			convertView = inflater.inflate(R.layout.artist_item, parent, false);
+			holder.image = (ImageView) convertView
+					.findViewById(R.id.artistItemImage);
+			holder.name = (TextView) convertView
+					.findViewById(R.id.artimstItemName);
+			convertView.setTag(holder);
+		} else {
+			holder = (ViewHolder) convertView.getTag();
 		}
 
 		final Artist artist = getItem(position);
 
-		final ImageView image = (ImageView) convertView
-				.findViewById(R.id.artistItemImage);
-		final TextView name = (TextView) convertView
-				.findViewById(R.id.artimstItemName);
-
-		ProgressBar titleProgressBar;
-		titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
-				R.id.leadProgressBar);
-		// hide the progress bar if it is not needed
-		titleProgressBar.setVisibility(View.GONE);
+		if (!finish) {
+			ProgressBar titleProgressBar;
+			titleProgressBar = (ProgressBar) parent.getRootView().findViewById(
+					R.id.leadProgressBar);
+			// hide the progress bar if it is not needed
+			titleProgressBar.setVisibility(View.GONE);
+			finish = true;
+		}
 
 		if (artist != null) {
 
-			image.setTag(artist.getImg());
+			holder.image.setTag(artist.getImg());
 			dm.DisplayImage(artist.getImg(),
-					(Activity) convertView.getContext(), image);
+					(Activity) convertView.getContext(), holder.image);
 
-			name.setText(artist.getName());
+			holder.name.setText(artist.getName());
 
 		}
 		return convertView;
