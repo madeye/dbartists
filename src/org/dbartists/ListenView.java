@@ -103,6 +103,7 @@ public class ListenView extends FrameLayout implements OnClickListener,
 			infoText.setText(null);
 		}
 	}
+
 	private class PlaybackUpdateReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -123,6 +124,7 @@ public class ListenView extends FrameLayout implements OnClickListener,
 			progressBar.setSecondaryProgress(downloaded);
 		}
 	}
+
 	private class RemotePlayReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -144,6 +146,7 @@ public class ListenView extends FrameLayout implements OnClickListener,
 			}
 		}
 	}
+
 	private static final String LOG_TAG = ListenView.class.getName();
 	// private ImageButton streamButton;
 	private ImageButton playButton;
@@ -295,12 +298,17 @@ public class ListenView extends FrameLayout implements OnClickListener,
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		Log.d(LOG_TAG, "detached from window");
-		getContext().unregisterReceiver(changeReceiver);
-		getContext().unregisterReceiver(updateReceiver);
-		getContext().unregisterReceiver(closeReceiver);
 		getContext().getApplicationContext().unbindService(conn);
-		getContext().unregisterReceiver(remotePlayReceiver);
+		Log.d(LOG_TAG, "detached from window");
+		try {
+			getContext().unregisterReceiver(changeReceiver);
+			getContext().unregisterReceiver(updateReceiver);
+			getContext().unregisterReceiver(closeReceiver);
+			getContext().unregisterReceiver(remotePlayReceiver);
+		} catch (IllegalArgumentException ignore) {
+			// Not yet register
+		}
+
 	}
 
 	@Override
