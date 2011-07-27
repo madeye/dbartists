@@ -49,6 +49,8 @@
 
 package org.dbartists;
 
+import com.flurry.android.FlurryAgent;
+
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -62,6 +64,16 @@ import android.widget.ProgressBar;
 
 public class GenreActivity extends PlayerActivity implements
 		OnItemClickListener {
+	
+	public void onStart() {
+		super.onStart();
+		FlurryAgent.onStartSession(this, "X51AT1EBV972SS9GNXTP");
+	}
+
+	public void onStop() {
+		super.onStop();
+		FlurryAgent.onEndSession(this);
+	}
 
 	private class GenreListAdapter extends ArrayAdapter<SubActivity> {
 		public GenreListAdapter(SubActivity[] activities) {

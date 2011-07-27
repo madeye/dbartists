@@ -53,6 +53,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.flurry.android.FlurryAgent;
+
 import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -62,52 +64,64 @@ import android.widget.TextView;
 
 public class AboutActivity extends Activity {
 
-  private int getVersionCode() {
-    int version = -1;
-    try {
-      PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
-      version = pi.versionCode;
-    } catch (PackageManager.NameNotFoundException e) {
-    }
-    return version;
-  }
+	public void onStart() {
+		super.onStart();
+		FlurryAgent.onStartSession(this, "X51AT1EBV972SS9GNXTP");
+	}
 
-  private String getVersionName() {
-    String version = "";
-    try {
-      PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
-      version = pi.versionName;
-    } catch (PackageManager.NameNotFoundException e) {
-      version = "Package name not found";
-    }
-    return version;
-  }
-  
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.about);
-    
-    TextView tv = (TextView) findViewById(R.id.AboutText);
-    Map<String, String> map = new LinkedHashMap<String, String>();
-    map.put(getString(R.string.msg_about_developer),
-    		getString(R.string.msg_about_developer_value));
-    map.put(getString(R.string.msg_about_contact),
-    		getString(R.string.msg_about_contact_value));
-    map.put(getString(R.string.msg_about_version_name), getVersionName());
-    map.put(getString(R.string.msg_about_version_code), "" + getVersionCode());
-    populateField(map, tv);
-  }
+	public void onStop() {
+		super.onStop();
+		FlurryAgent.onEndSession(this);
+	}
 
-  private void populateField(Map<String, String> values, TextView view) {
-    StringBuilder sb = new StringBuilder();
-    for (Entry<String, String> entry : values.entrySet()) {
-      String fieldName = entry.getKey();
-      String fieldValue = entry.getValue();
-      sb.append(fieldName)
-        .append(": ")
-        .append("<b>").append(fieldValue).append("</b><br>");
-    }
-    view.setText(Html.fromHtml(sb.toString()));
-  }
+	private int getVersionCode() {
+		int version = -1;
+		try {
+			PackageInfo pi = getPackageManager().getPackageInfo(
+					getPackageName(), 0);
+			version = pi.versionCode;
+		} catch (PackageManager.NameNotFoundException e) {
+		}
+		return version;
+	}
+
+	private String getVersionName() {
+		String version = "";
+		try {
+			PackageInfo pi = getPackageManager().getPackageInfo(
+					getPackageName(), 0);
+			version = pi.versionName;
+		} catch (PackageManager.NameNotFoundException e) {
+			version = "Package name not found";
+		}
+		return version;
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.about);
+
+		TextView tv = (TextView) findViewById(R.id.AboutText);
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		map.put(getString(R.string.msg_about_developer),
+				getString(R.string.msg_about_developer_value));
+		map.put(getString(R.string.msg_about_contact),
+				getString(R.string.msg_about_contact_value));
+		map.put(getString(R.string.msg_about_version_name), getVersionName());
+		map.put(getString(R.string.msg_about_version_code), ""
+				+ getVersionCode());
+		populateField(map, tv);
+	}
+
+	private void populateField(Map<String, String> values, TextView view) {
+		StringBuilder sb = new StringBuilder();
+		for (Entry<String, String> entry : values.entrySet()) {
+			String fieldName = entry.getKey();
+			String fieldValue = entry.getValue();
+			sb.append(fieldName).append(": ").append("<b>").append(fieldValue)
+					.append("</b><br>");
+		}
+		view.setText(Html.fromHtml(sb.toString()));
+	}
 }

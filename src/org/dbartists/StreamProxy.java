@@ -367,7 +367,7 @@ public class StreamProxy implements Runnable {
 
 		try {
 			byte[] buffer = httpString.toString().getBytes();
-			int readBytes = -1;
+			int readBytes;
 			Log.d(LOG_TAG, "writing to client");
 			client.getOutputStream().write(buffer, 0, buffer.length);
 
@@ -400,7 +400,7 @@ public class StreamProxy implements Runnable {
 		try {
 			is = client.getInputStream();
 			BufferedReader reader = new BufferedReader(
-					new InputStreamReader(is));
+					new InputStreamReader(is), 8192);
 			firstLine = reader.readLine();
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "Error parsing request", e);

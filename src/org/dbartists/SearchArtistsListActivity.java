@@ -53,6 +53,8 @@ import java.net.URLEncoder;
 
 import org.dbartists.api.Artist;
 
+import com.flurry.android.FlurryAgent;
+
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -73,6 +75,16 @@ public class SearchArtistsListActivity extends PlayerActivity implements
 	private String searchKeywords;
 
 	protected SearchArtistsListAdapter listAdapter;
+	
+	public void onStart() {
+		super.onStart();
+		FlurryAgent.onStartSession(this, "X51AT1EBV972SS9GNXTP");
+	}
+
+	public void onStop() {
+		super.onStop();
+		FlurryAgent.onEndSession(this);
+	}
 
 	private void addArtists() {
 

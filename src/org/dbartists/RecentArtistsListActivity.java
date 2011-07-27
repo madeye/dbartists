@@ -51,6 +51,8 @@ package org.dbartists;
 
 import org.dbartists.api.Artist;
 
+import com.flurry.android.FlurryAgent;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -67,6 +69,16 @@ public class RecentArtistsListActivity extends PlayerActivity implements
 	private String description;
 
 	protected RecentArtistsListAdapter listAdapter;
+	
+	public void onStart() {
+		super.onStart();
+		FlurryAgent.onStartSession(this, "X51AT1EBV972SS9GNXTP");
+	}
+
+	public void onStop() {
+		super.onStop();
+		FlurryAgent.onEndSession(this);
+	}
 
 	private void addArtists() {
 

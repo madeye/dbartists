@@ -53,6 +53,8 @@ import org.dbartists.utils.PlaylistProvider;
 import org.dbartists.utils.PlaylistProvider.Items;
 import org.dbartists.utils.RecentArtistProvider.ArtistItems;
 
+import com.flurry.android.FlurryAgent;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -133,6 +135,16 @@ public class PlaylistActivity extends Activity implements OnClickListener,
 		
 
 		refreshList();
+	}
+	
+	public void onStart() {
+		super.onStart();
+		FlurryAgent.onStartSession(this, "X51AT1EBV972SS9GNXTP");
+	}
+
+	public void onStop() {
+		super.onStop();
+		FlurryAgent.onEndSession(this);
 	}
 
 	@Override

@@ -62,6 +62,8 @@ import org.dbartists.utils.PlaylistProvider.Items;
 import org.dbartists.utils.RecentArtistProvider;
 import org.dbartists.utils.RecentArtistProvider.ArtistItems;
 
+import com.flurry.android.FlurryAgent;
+
 import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -92,6 +94,16 @@ public class TrackListActivity extends PlayerActivity implements
 	private ImageLoader dm;
 
 	protected TrackListAdapter listAdapter;
+	
+	public void onStart() {
+		super.onStart();
+		FlurryAgent.onStartSession(this, "X51AT1EBV972SS9GNXTP");
+	}
+
+	public void onStop() {
+		super.onStop();
+		FlurryAgent.onEndSession(this);
+	}
 
 	private void addTracks() {
 		String trackUrl = apiUrl + "?url=" + artistUrl;

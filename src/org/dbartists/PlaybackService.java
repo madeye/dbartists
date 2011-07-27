@@ -58,6 +58,8 @@ import org.dbartists.utils.PlaylistEntry;
 import org.dbartists.utils.PlaylistProvider;
 import org.dbartists.utils.PlaylistProvider.Items;
 
+import com.flurry.android.FlurryAgent;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -124,7 +126,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private int lastBufferPercent = 0;
 
 	private Thread updateProgressThread;
-	
+
 	private MusicDownloader md;
 
 	// Amount of time to rewind playback when resuming after call
@@ -142,20 +144,23 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			File f = new File(StreamProxy.getFileName(title));
 
 			Log.d(LOG_TAG, "title: " + title + " remote size: " + file_size);
-			
-		    // From 2.2 on (SDK ver 8), the local mediaplayer can handle Shoutcast
-		    // streams natively. Let's detect that, and not proxy.
-		    Log.d(LOG_TAG, "SDK Version " + Build.VERSION.SDK);
-		    int sdkVersion = 0;
-		    try {
-		      sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-		    } catch (NumberFormatException e) {
-		    }
 
-			if (f.exists() && file_size != -1 && Math.abs(f.length() - file_size) < 100 * 1024) {
+			// From 2.2 on (SDK ver 8), the local mediaplayer can handle
+			// Shoutcast
+			// streams natively. Let's detect that, and not proxy.
+//			Log.d(LOG_TAG, "SDK Version " + Build.VERSION.SDK);
+//			int sdkVersion = 0;
+//			try {
+//				sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+//			} catch (NumberFormatException e) {
+//			}
+
+			if (f.exists() && file_size != -1
+					&& Math.abs(f.length() - file_size) < 100 * 1024) {
 				url = f.getAbsolutePath();
 				stream = false;
-			} else if (sdkVersion < 8){
+				// } else if (sdkVersion < 10){
+			} else {
 				if (proxy == null) {
 					proxy = new StreamProxy();
 					proxy.init();
@@ -167,11 +172,11 @@ public class PlaybackService extends Service implements OnPreparedListener,
 						proxy.getPort(), url);
 				url = proxyUrl;
 				stream = true;
-			
-			} else {
-				stream = true;
-				md.download(url, f.getAbsolutePath());
 			}
+			// } else {
+			// stream = true;
+			// md.download(url, f.getAbsolutePath());
+			// }
 
 			synchronized (this) {
 				try {
@@ -204,6 +209,14 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private OnCompletionListener onCompletionListener;
 
 	private OnPreparedListener onPreparedListener;
+	
+	public void onStart() {
+		FlurryAgent.onStartSession(this, "X51AT1EBV972SS9GNXTP");
+	}
+
+	public void onStop() {
+		FlurryAgent.onEndSession(this);
+	}
 
 	/**
 	 * Remove all intents and notifications about the last media.
@@ -426,7 +439,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 		// Register the listener with the telephony manager.
 		telephonyManager.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
-		
+
 		md = new MusicDownloader(this);
 	}
 
@@ -443,7 +456,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 				Log.e(LOG_TAG, "", e);
 			}
 		}
-		
+
 		md.stopThread();
 
 		stop();
