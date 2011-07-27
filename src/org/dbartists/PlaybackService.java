@@ -148,19 +148,18 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			// From 2.2 on (SDK ver 8), the local mediaplayer can handle
 			// Shoutcast
 			// streams natively. Let's detect that, and not proxy.
-//			Log.d(LOG_TAG, "SDK Version " + Build.VERSION.SDK);
-//			int sdkVersion = 0;
-//			try {
-//				sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-//			} catch (NumberFormatException e) {
-//			}
+			Log.d(LOG_TAG, "SDK Version " + Build.VERSION.SDK);
+			int sdkVersion = 0;
+			try {
+				sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+			} catch (NumberFormatException e) {
+			}
 
 			if (f.exists() && file_size != -1
 					&& Math.abs(f.length() - file_size) < 100 * 1024) {
 				url = f.getAbsolutePath();
 				stream = false;
-				// } else if (sdkVersion < 10){
-			} else {
+			} else if (sdkVersion < 8) {
 				if (proxy == null) {
 					proxy = new StreamProxy();
 					proxy.init();
@@ -172,11 +171,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 						proxy.getPort(), url);
 				url = proxyUrl;
 				stream = true;
+			} else {
+				stream = true;
+				md.download(url, f.getAbsolutePath());
 			}
-			// } else {
-			// stream = true;
-			// md.download(url, f.getAbsolutePath());
-			// }
 
 			synchronized (this) {
 				try {
@@ -209,7 +207,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private OnCompletionListener onCompletionListener;
 
 	private OnPreparedListener onPreparedListener;
-	
+
 	public void onStart() {
 		FlurryAgent.onStartSession(this, "X51AT1EBV972SS9GNXTP");
 	}
