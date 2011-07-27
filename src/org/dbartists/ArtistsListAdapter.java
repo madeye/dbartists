@@ -126,7 +126,8 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
 	private void getMoreArtists(String url, int startId) {
 		List<Artist> downloadArtists = ArtistFactory.downloadArtists(url,
 				startId);
-		if (downloadArtists != null && downloadArtists.size() < 20) {
+		// Work around for the bug of douban
+		if (downloadArtists != null && downloadArtists.size() < 18) {
 			endReached = true;
 		}
 		if (downloadArtists != null)
