@@ -75,7 +75,7 @@ public class SearchArtistsListActivity extends PlayerActivity implements
 	private String searchKeywords;
 
 	protected SearchArtistsListAdapter listAdapter;
-	
+
 	public void onStart() {
 		super.onStart();
 		FlurryAgent.onStartSession(this, "X51AT1EBV972SS9GNXTP");
@@ -121,7 +121,8 @@ public class SearchArtistsListActivity extends PlayerActivity implements
 
 		ListView listView = (ListView) findViewById(R.id.ListView01);
 		listView.setOnItemClickListener(this);
-		listAdapter = new SearchArtistsListAdapter(SearchArtistsListActivity.this);
+		listAdapter = new SearchArtistsListAdapter(
+				SearchArtistsListActivity.this);
 		listView.setAdapter(listAdapter);
 
 		addArtists();
@@ -153,7 +154,11 @@ public class SearchArtistsListActivity extends PlayerActivity implements
 
 	@Override
 	public void onNewIntent(Intent intent) {
+		if (intent == null)
+			return;
 		String queryAction = intent.getAction();
+		if (queryAction == null)
+			return;
 		if (queryAction.equals(Intent.ACTION_SEARCH)) {
 			searchKeywords = intent.getStringExtra(SearchManager.QUERY);
 			description = getString(R.string.msg_search);
