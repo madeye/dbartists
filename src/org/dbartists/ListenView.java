@@ -113,9 +113,10 @@ public class ListenView extends FrameLayout implements OnClickListener,
 					.getIntExtra(PlaybackService.EXTRA_POSITION, 0);
 			int downloaded = intent.getIntExtra(
 					PlaybackService.EXTRA_DOWNLOADED, 1);
-			if (!playButtonisPause && player != null && player.isPlaying()) {
+			if (player != null && player.isPlaying()) {
 				playButton.setImageResource(android.R.drawable.ic_media_pause);
-				playButtonisPause = true;
+			} else {
+				playButton.setImageResource(android.R.drawable.ic_media_play);
 			}
 			playButton.setEnabled(true);
 			progressBar.setEnabled(true);
@@ -155,7 +156,6 @@ public class ListenView extends FrameLayout implements OnClickListener,
 	private TextView infoText;
 	private TextView lengthText;
 	private SlidingDrawer drawer;
-	private boolean playButtonisPause = false;
 
 	private BroadcastReceiver changeReceiver = new PlaybackChangeReceiver();
 	private BroadcastReceiver updateReceiver = new PlaybackUpdateReceiver();
@@ -349,11 +349,9 @@ public class ListenView extends FrameLayout implements OnClickListener,
 		if (player.isPlaying()) {
 			player.pause();
 			playButton.setImageResource(android.R.drawable.ic_media_play);
-			playButtonisPause = false;
 		} else {
 			player.play();
 			playButton.setImageResource(android.R.drawable.ic_media_pause);
-			playButtonisPause = true;
 		}
 	}
 }
