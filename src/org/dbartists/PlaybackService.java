@@ -208,14 +208,6 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 	private OnPreparedListener onPreparedListener;
 
-	public void onStart() {
-		FlurryAgent.onStartSession(this, "X51AT1EBV972SS9GNXTP");
-	}
-
-	public void onStop() {
-		FlurryAgent.onEndSession(this);
-	}
-
 	/**
 	 * Remove all intents and notifications about the last media.
 	 */
