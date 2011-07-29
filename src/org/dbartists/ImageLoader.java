@@ -80,25 +80,33 @@ public class ImageLoader {
 	}
 
 	public static Bitmap getRoundedCornerBitmap(Bitmap bitmap) {
-		Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-				bitmap.getHeight(), Config.ARGB_8888);
-		Canvas canvas = new Canvas(output);
+		if (bitmap == null)
+			return null;
+		try {
+			Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+					bitmap.getHeight(), Config.ARGB_8888);
+			Canvas canvas = new Canvas(output);
 
-		final int color = 0xff424242;
-		final Paint paint = new Paint();
-		final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-		final RectF rectF = new RectF(rect);
-		final float roundPx = 8;
+			final int color = 0xff424242;
+			final Paint paint = new Paint();
+			final Rect rect = new Rect(0, 0, bitmap.getWidth(),
+					bitmap.getHeight());
+			final RectF rectF = new RectF(rect);
+			final float roundPx = 8;
 
-		paint.setAntiAlias(true);
-		canvas.drawARGB(0, 0, 0, 0);
-		paint.setColor(color);
-		canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+			paint.setAntiAlias(true);
+			canvas.drawARGB(0, 0, 0, 0);
+			paint.setColor(color);
+			canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
 
-		paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
-		canvas.drawBitmap(bitmap, rect, rect, paint);
+			paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+			canvas.drawBitmap(bitmap, rect, rect, paint);
 
-		return output;
+			return output;
+			
+		} catch (Exception ex) {
+			return null;
+		}
 	}
 
 	class PhotosLoader extends Thread {
