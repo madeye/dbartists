@@ -136,11 +136,13 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		@Override
 		public void handleMessage(Message msg) {
 
+			if (mediaPlayer == null)
+				return;
+			
 			String title = current.title;
 			int file_size = msg.arg1;
 			boolean stream = current.isStream;
 			String url = current.url;
-
 			File f = new File(StreamProxy.getFileName(title));
 
 			Log.d(LOG_TAG, "title: " + title + " remote size: " + file_size);
