@@ -124,6 +124,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 	private Intent lastChangeBroadcast;
 	private Intent lastUpdateBroadcast;
 	private int lastBufferPercent = 0;
+	private boolean hasNext = false;
 
 	private Thread updateProgressThread;
 
@@ -138,7 +139,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 			if (mediaPlayer == null)
 				return;
-			
+
 			String title = current.title;
 			int file_size = msg.arg1;
 			boolean stream = current.isStream;
@@ -151,11 +152,11 @@ public class PlaybackService extends Service implements OnPreparedListener,
 			// Shoutcast
 			// streams natively. Let's detect that, and not proxy.
 			Log.d(LOG_TAG, "SDK Version " + Build.VERSION.SDK);
-//			int sdkVersion = 0;
-//			try {
-//				sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-//			} catch (NumberFormatException e) {
-//			}
+			// int sdkVersion = 0;
+			// try {
+			// sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+			// } catch (NumberFormatException e) {
+			// }
 
 			if (f.exists() && file_size != -1
 					&& Math.abs(f.length() - file_size) < 100 * 1024) {
@@ -174,10 +175,10 @@ public class PlaybackService extends Service implements OnPreparedListener,
 				url = proxyUrl;
 				stream = true;
 			}
-//			} else {
-//				stream = true;
-//				md.download(url, f.getAbsolutePath());
-//			}
+			// } else {
+			// stream = true;
+			// md.download(url, f.getAbsolutePath());
+			// }
 
 			synchronized (this) {
 				try {
@@ -389,7 +390,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 		}
 
 		playNext();
-		if (bindCount == 0 && !isPlaying()) {
+		if (bindCount == 0 && !isPlaying() && !hasNext) {
 			stopSelf();
 		}
 	}
@@ -589,6 +590,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 
 	private void playNext() {
 		Log.w(LOG_TAG, "Playing next track");
+		hasNext = false;
 		if (current != null) {
 			PlaylistEntry entry = getNextPlaylistItem(current.order);
 			if (entry != null) {
@@ -599,6 +601,7 @@ public class PlaybackService extends Service implements OnPreparedListener,
 						Log.d(LOG_TAG, "no url");
 						// Do nothing.
 					} else {
+						hasNext = true;
 						listen(url, current.isStream);
 					}
 				} catch (IllegalArgumentException e) {
