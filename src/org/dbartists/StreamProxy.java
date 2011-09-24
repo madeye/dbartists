@@ -195,6 +195,7 @@ public class StreamProxy implements Runnable {
 			return superLine;
 		}
 	}
+
 	class MyClientConnection extends DefaultClientConnection {
 		@Override
 		protected HttpMessageParser createResponseParser(
@@ -216,6 +217,7 @@ public class StreamProxy implements Runnable {
 			return new MyClientConnection();
 		}
 	}
+
 	class MyClientConnManager extends SingleClientConnManager {
 		private MyClientConnManager(HttpParams params, SchemeRegistry schreg) {
 			super(params, schreg);
@@ -231,6 +233,7 @@ public class StreamProxy implements Runnable {
 	private static final String LOG_TAG = StreamProxy.class.getName();
 
 	private static final String CACHE_BASE = "/sdcard/dbartists/";
+
 	private static String convertToHex(byte[] data) {
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < data.length; i++) {
@@ -246,6 +249,7 @@ public class StreamProxy implements Runnable {
 		}
 		return buf.toString();
 	}
+
 	public static String getFileName(String name) {
 		String file;
 		try {
@@ -275,9 +279,9 @@ public class StreamProxy implements Runnable {
 	private int port = 0;
 
 	private String title = "tmp";
-	
+
 	private volatile boolean isRunning = true;
-	
+
 	private ServerSocket socket;
 
 	private Thread thread;
@@ -347,20 +351,40 @@ public class StreamProxy implements Runnable {
 		Log.d(LOG_TAG, "downloading...");
 
 		InputStream data = realResponse.getEntity().getContent();
-		StatusLine line = realResponse.getStatusLine();
-		HttpResponse response = new BasicHttpResponse(line);
-		response.setHeaders(realResponse.getAllHeaders());
+		// StatusLine line = realResponse.getStatusLine();
+		// HttpResponse response = new BasicHttpResponse(line);
+		// response.setHeaders(realResponse.getAllHeaders());
+		//
+		// Log.d(LOG_TAG, "reading headers");
+		// StringBuilder httpString = new StringBuilder();
+		// httpString.append(response.getStatusLine().toString());
+		//
+		// httpString.append("\n");
+		// for (Header h : response.getAllHeaders()) {
+		// httpString.append(h.getName()).append(": ").append(h.getValue())
+		// .append("\n");
+		// }
+		// httpString.append("\n");
 
-		Log.d(LOG_TAG, "reading headers");
-		StringBuilder httpString = new StringBuilder();
-		httpString.append(response.getStatusLine().toString());
-
-		httpString.append("\n");
-		for (Header h : response.getAllHeaders()) {
-			httpString.append(h.getName()).append(": ").append(h.getValue())
-					.append("\n");
+		int totalFileSize = -1;
+		for (Header h : realResponse.getAllHeaders()) {
+			if (h.getName().toLowerCase().equals("content-length"))
+				try {
+					totalFileSize = Integer.valueOf(h.getValue());
+				} catch (NumberFormatException e) {
+					// Ignore
+				}
 		}
-		httpString.append("\n");
+		StringBuilder httpString = new StringBuilder();
+		httpString.append("HTTP/1.1 200 OK\r\n");
+		httpString.append("Content-Type: audio/mpeg\r\n");
+		httpString.append("Connection: close\r\n");
+		httpString.append("Accept-Ranges: bytes\r\n");
+		if (totalFileSize != -1)
+			httpString.append("Content-Length: " + totalFileSize + "\r\n");
+		httpString.append("Content-Disposition: inline; filename=" + cache
+				+ ".mp3\r\n\r\n");
+
 		Log.d(LOG_TAG, "headers done");
 
 		OutputStream output = new FileOutputStream(cache);
@@ -472,7 +496,7 @@ public class StreamProxy implements Runnable {
 		} catch (InterruptedException e) {
 			Log.e(LOG_TAG, "join error");
 		}
-		
+
 		try {
 			socket.close();
 		} catch (IOException e) {
