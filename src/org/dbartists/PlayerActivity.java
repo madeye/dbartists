@@ -98,19 +98,9 @@ public abstract class PlayerActivity extends ActivityGroup implements
 	private static final String LOG_TAG = PlayerActivity.class.getName();
 	private ListenView listenView;
 	private static boolean ignoreWifi = false;
-	private static boolean closeAd = false;
 
 	protected void addToPlayList(List<PlaylistEntry> entries) {
 		listenView.addToPlayList(entries);
-	}
-
-	private void closeAd() {
-		if (closeAd)
-			closeAd = false;
-		else
-			closeAd = true;
-		LinearLayout layout = (LinearLayout) findViewById(R.id.ad);
-		layout.setVisibility(View.GONE);
 	}
 
 	@Override
@@ -180,20 +170,6 @@ public abstract class PlayerActivity extends ActivityGroup implements
 		titleText = (TextView) findViewById(R.id.LogoNavText);
 		titleText.setText(getMainTitle());
 
-		if (!closeAd) {
-			// Create the adView
-			AdView adView = new AdView(this, AdSize.BANNER, "a14dbe96b16a891");
-			// Lookup your LinearLayout assuming it¡¯s been given
-			// the attribute android:id="@+id/mainLayout"
-			LinearLayout layout = (LinearLayout) findViewById(R.id.ad);
-			// Add the adView to it
-			layout.addView(adView);
-			// Initiate a generic request to load it with an ad
-			AdRequest aq = new AdRequest();
-			// aq.setTesting(true);
-			adView.loadAd(aq);
-		}
-
 		ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 		if (networkInfo != null && !networkInfo.getTypeName().equals("WIFI")) {
@@ -241,10 +217,6 @@ public abstract class PlayerActivity extends ActivityGroup implements
 					R.string.msg_refresh).setAlphabeticShortcut('r')
 					.setIcon(R.drawable.reload);
 		}
-		menu.add(Menu.NONE, MenuId.CLOSEAD.ordinal(), Menu.NONE,
-				R.string.msg_close_ad)
-				.setIcon(android.R.drawable.ic_menu_close_clear_cancel)
-				.setAlphabeticShortcut('c');
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -255,8 +227,6 @@ public abstract class PlayerActivity extends ActivityGroup implements
 			return true;
 		} else if (item.getItemId() == MenuId.REFRESH.ordinal()) {
 			this.refresh();
-		} else if (item.getItemId() == MenuId.CLOSEAD.ordinal()) {
-			this.closeAd();
 		}
 		return super.onOptionsItemSelected(item);
 	}

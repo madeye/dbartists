@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">豆瓣音乐人</string>
+	<string name="app_name">豆乐</string>
 	<string name="checkbox"></string>
 	<string name="ringtone"></string>
 
@@ -12,8 +12,6 @@
 	<string name="msg_label_genre">流派：</string>
 	<string name="msg_label_member">成员：</string>
 	<string name="msg_label_company">唱片公司：</string>
-
-	<string name="msg_close_ad">打开/关闭广告</string>
 
 	<string name="msg_refresh">刷新</string>
 	<string name="msg_search">搜索：</string>
