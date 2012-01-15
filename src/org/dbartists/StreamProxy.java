@@ -351,20 +351,6 @@ public class StreamProxy implements Runnable {
 		Log.d(LOG_TAG, "downloading...");
 
 		InputStream data = realResponse.getEntity().getContent();
-		// StatusLine line = realResponse.getStatusLine();
-		// HttpResponse response = new BasicHttpResponse(line);
-		// response.setHeaders(realResponse.getAllHeaders());
-		//
-		// Log.d(LOG_TAG, "reading headers");
-		// StringBuilder httpString = new StringBuilder();
-		// httpString.append(response.getStatusLine().toString());
-		//
-		// httpString.append("\n");
-		// for (Header h : response.getAllHeaders()) {
-		// httpString.append(h.getName()).append(": ").append(h.getValue())
-		// .append("\n");
-		// }
-		// httpString.append("\n");
 
 		int totalFileSize = -1;
 		for (Header h : realResponse.getAllHeaders()) {
@@ -396,7 +382,7 @@ public class StreamProxy implements Runnable {
 			client.getOutputStream().write(buffer, 0, buffer.length);
 
 			// Start streaming content.
-			byte[] buff = new byte[1024 * 100];
+			byte[] buff = new byte[1024 * 250];
 			while (isRunning
 					&& (readBytes = data.read(buff, 0, buff.length)) != -1) {
 				client.getOutputStream().write(buff, 0, readBytes);

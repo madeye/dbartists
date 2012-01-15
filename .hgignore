@@ -7,3 +7,5 @@ syntax: glob
 bin\*
 syntax: regexp
 bin/*
+syntax: regexp
+^local\.properties$

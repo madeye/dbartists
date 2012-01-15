@@ -77,10 +77,6 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.ads.AdRequest;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
-
 /**
  * @author mfrederick@google.com (Michael Frederick)
  * 
